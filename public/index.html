@@ -1,0 +1,3207 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Houthandel Veenstra – Specialist in hout &amp; bouwmaterialen</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --oranje: #e07b2a;
+      --oranje-hover: #c4641a;
+      --oranje-licht: #f5e6d6;
+      --bruin: #5c3317;
+      --bruin-mid: #8b5e3c;
+      --donker: #2c2017;
+      --grijs: #6b6b6b;
+      --grijs-licht: #f0ece7;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--grijs-licht);
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ─── NOTIFICATIEBALK ─── */
+    #notificatie-balk {
+      display: none;
+      background: var(--oranje);
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 9px 48px;
+      z-index: 110;
+      position: relative;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    #notificatie-balk a {
+      color: #fff;
+      text-decoration: underline;
+      margin-left: 12px;
+      font-size: .8rem;
+      opacity: .8;
+      cursor: pointer;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(44,32,23,0.97);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .header-logo {
+      cursor: pointer;
+      user-select: none;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      line-height: 1.2;
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      padding: 6px 18px;
+      transition: background .2s;
+    }
+    .header-logo:hover {
+      background: rgba(255,255,255,0.18);
+    }
+    .header-logo-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: .5px;
+      white-space: nowrap;
+      color: var(--oranje);
+    }
+    .header-logo-title span { color: var(--oranje); }
+    .header-logo-slogan {
+      font-size: .68rem;
+      font-weight: 400;
+      letter-spacing: .2px;
+      color: #fff;
+      white-space: nowrap;
+    }
+    header nav, .header-nav-links, .header-nav-rechts {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .header-nav-links {
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      padding: 5px 6px;
+    }
+    .header-nav-rechts {
+      background: rgba(255,255,255,0.09);
+      border-radius: 999px;
+      padding: 5px 6px;
+    }
+    header nav a {
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: .88rem;
+      padding: 6px 16px;
+      border-radius: 999px;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    header nav a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    .btn-login {
+      background: var(--oranje) !important;
+      color: #fff !important;
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: .88rem;
+    }
+    .btn-login:hover { background: var(--oranje-hover) !important; }
+    .header-account {
+      display: contents;
+    }
+    .header-avatar {
+      width: 32px; height: 32px;
+      background: var(--oranje);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .88rem;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .header-avatar:hover { background: var(--oranje-hover); }
+
+    /* ─── ZOEKBALK ─── */
+    #site-zoekbalk {
+      background: var(--donker);
+      padding: 10px 48px;
+      display: flex;
+      justify-content: center;
+      flex-shrink: 0;
+      border-bottom: 2px solid var(--bruin);
+    }
+    .site-zoek-inner {
+      display: flex;
+      width: 100%;
+      max-width: 640px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: border-color .15s;
+    }
+    .site-zoek-inner:focus-within {
+      border-color: var(--oranje);
+      background: rgba(255,255,255,0.15);
+    }
+    #site-zoek-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: .95rem;
+      font-family: inherit;
+      padding: 9px 16px;
+    }
+    #site-zoek-input::placeholder { color: rgba(255,255,255,0.45); }
+    #site-zoek-btn {
+      background: var(--oranje);
+      border: none;
+      color: #fff;
+      padding: 0 18px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background .15s;
+    }
+    #site-zoek-btn:hover { background: var(--oranje-hover); }
+    /* zoekresultaten */
+    .zoek-resultaten-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 0 12px;
+      border-bottom: 1px solid #e0d8d0;
+      margin-bottom: 16px;
+    }
+    .zoek-resultaten-header h3 { font-size: 1.05rem; color: var(--bruin); }
+    .zoek-terug-btn {
+      background: none;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 5px 12px;
+      cursor: pointer;
+      font-size: .82rem;
+      color: #666;
+      font-family: inherit;
+      transition: all .15s;
+    }
+    .zoek-terug-btn:hover { border-color: var(--oranje); color: var(--oranje); }
+    .zoek-product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .zoek-product-kaart {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #c0c8d0;
+      box-shadow: 0 2px 10px rgba(0,0,0,.09), inset 0 0 0 0.5px rgba(255,255,255,.6);
+      font-size: .9rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: box-shadow .18s, transform .18s, border-color .18s;
+      cursor: default;
+    }
+    .zoek-product-kaart:hover {
+      box-shadow: 0 8px 28px rgba(0,0,0,.15), inset 0 0 0 0.5px rgba(255,255,255,.6);
+      border-color: #a0aab4;
+      transform: translateY(-3px);
+    }
+    .zoek-product-kaart { cursor: pointer; }
+
+    /* ─── MAANDAANBIEDINGEN BADGE ─── */
+    .aanb-korting-badge {
+      display: inline-block;
+      background: var(--oranje);
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 700;
+      border-radius: 20px;
+      padding: 2px 9px;
+      margin-left: auto;
+    }
+    .aanb-prijs-oud {
+      font-size: .8rem;
+      color: #bbb;
+      text-decoration: line-through;
+      margin-right: 4px;
+    }
+    .aanb-sectie-wrap {
+      background: #f7f3ef;
+      padding: 28px 40px 32px;
+      flex-shrink: 0;
+    }
+    .aanb-kop {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .aanb-kop h3 {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--oranje);
+      margin-bottom: 6px;
+    }
+    .aanb-sectie-wrap .aanb-sub {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--donker);
+      margin: 0;
+    }
+    @media (max-width: 700px) {
+      .aanb-sectie-wrap { padding: 20px 16px 24px; }
+      .aanb-kop h3 { letter-spacing: 2px; }
+    }
+
+    /* ─── WINKELMANDJE BADGE (header) ─── */
+    .wm-btn {
+      position: relative;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      border-radius: 999px;
+      color: rgba(255,255,255,0.85);
+      font-size: .88rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: background .15s, color .15s;
+      font-family: inherit;
+    }
+    .wm-btn:hover { background: rgba(255,255,255,0.22); color: #fff; }
+    .wm-badge {
+      background: var(--oranje);
+      color: #fff;
+      border-radius: 999px;
+      font-size: .68rem;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+      display: none;
+    }
+
+    /* ─── PRODUCT PAGINA ─── */
+    #sectie-product {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      background: var(--grijs-licht);
+    }
+    .pd-banner {
+      background: var(--donker);
+      color: #fff;
+      padding: 0 48px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+      border-bottom: 2px solid rgba(255,255,255,0.06);
+    }
+    .pd-terug-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: rgba(255,255,255,0.8);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pd-terug-btn:hover { background: rgba(255,255,255,.22); color: #fff; }
+    .pd-banner-info { flex: 1; min-width: 0; }
+    .pd-banner-titel { font-size: .97rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pd-banner-cat { font-size: .72rem; color: rgba(255,255,255,.38); }
+    .pd-pagina-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 44px 64px;
+    }
+    .pd-pagina-body::-webkit-scrollbar { width: 5px; }
+    .pd-pagina-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    .pd-main-grid {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 48px;
+      align-items: start;
+      margin-bottom: 44px;
+    }
+    .pd-main-grid > div:first-child {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    /* Gallery */
+    .pd-gallery {
+      background: #fff;
+      border-radius: 18px;
+      border: 1.5px solid #c8d0d8;
+      box-shadow: 0 4px 20px rgba(0,0,0,.09);
+      position: relative;
+      width: 100%;
+      max-width: 380px;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .pd-gallery img {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .pd-gallery-placeholder { font-size: 6rem; color: #ddd; }
+    .pd-gallery-dots {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 7px;
+    }
+    .pd-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.2);
+      border: none; padding: 0; cursor: pointer;
+      transition: background .15s, transform .15s;
+    }
+    .pd-dot.actief { background: var(--oranje); transform: scale(1.35); }
+    .pd-pijl {
+      position: absolute;
+      top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.92);
+      border: none; border-radius: 50%;
+      width: 44px; height: 44px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,.14);
+      transition: background .15s;
+      z-index: 2;
+    }
+    .pd-pijl:hover { background: #fff; }
+    .pd-pijl.links { left: 14px; }
+    .pd-pijl.rechts { right: 14px; }
+    /* Thumbnails */
+    .pd-thumbs {
+      display: flex; gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .pd-thumb {
+      width: 68px; height: 68px;
+      border-radius: 10px;
+      object-fit: contain;
+      cursor: pointer;
+      border: 2px solid #ddd;
+      background: #f8f8f8;
+      padding: 5px;
+      transition: border-color .15s;
+      flex-shrink: 0;
+    }
+    .pd-thumb.actief { border-color: var(--oranje); }
+    /* Info kolom */
+    .pd-naam {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--donker);
+      line-height: 1.25;
+      margin-bottom: 4px;
+    }
+    .pd-code {
+      font-size: .8rem;
+      color: #bbb;
+      font-family: monospace;
+      margin-bottom: 0;
+    }
+    .pd-scheidingslijn { border: none; border-top: 1px solid #ede8e2; margin: 18px 0; }
+    .pd-prijs-rij {
+      display: flex; align-items: baseline; gap: 8px;
+      margin-bottom: 3px;
+    }
+    .pd-prijs { font-size: 2.1rem; font-weight: 800; color: var(--oranje); }
+    .pd-eenheid { font-size: .9rem; color: #aaa; font-weight: 500; }
+    .pd-btw-info { font-size: .76rem; color: #bbb; margin-bottom: 20px; }
+    .pd-op-aanvraag {
+      font-size: 1rem; color: #888; font-weight: 600;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: #f8f8f8;
+      border-radius: 10px;
+      border: 1px solid #eee;
+    }
+    .pd-bestel-rij {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 18px; flex-wrap: wrap;
+    }
+    .pd-aantal {
+      display: flex; align-items: center;
+      border: 1.5px solid #ddd;
+      border-radius: 10px; overflow: hidden;
+    }
+    .pd-aantal button {
+      background: #f5f5f5; border: none;
+      width: 42px; height: 50px;
+      font-size: 1.2rem; cursor: pointer;
+      transition: background .12s; font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .pd-aantal button:hover { background: #eaeaea; }
+    .pd-aantal input {
+      width: 54px; border: none;
+      border-left: 1px solid #eee; border-right: 1px solid #eee;
+      text-align: center; font-size: 1rem; font-weight: 700;
+      height: 50px; outline: none;
+      font-family: inherit; color: var(--donker);
+    }
+    .pd-toevoegen {
+      flex: 1; min-width: 160px;
+      background: var(--oranje); color: #fff;
+      border: none; border-radius: 10px; height: 50px;
+      font-size: .97rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; transition: background .15s, transform .12s;
+      font-family: inherit;
+    }
+    .pd-toevoegen:hover { background: var(--oranje-hover); transform: translateY(-1px); }
+    .pd-toevoegen:active { transform: translateY(0); }
+    .pd-toevoegen.succes { background: #27ae60; }
+    .pd-usps {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .pd-usp-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: .78rem; color: var(--bruin-mid);
+      background: var(--oranje-licht);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-weight: 600;
+    }
+    .pd-specs {
+      background: #fff;
+      border: 1.5px solid #ede8e2;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .pd-specs-rij {
+      display: flex; border-bottom: 1px solid #ede8e2;
+      font-size: .88rem;
+    }
+    .pd-specs-rij:last-child { border-bottom: none; }
+    .pd-specs-label { width: 130px; padding: 10px 16px; background: #faf7f4; color: var(--bruin-mid); font-weight: 600; flex-shrink: 0; }
+    .pd-specs-val { padding: 10px 16px; color: var(--donker); flex: 1; }
+    /* Beschrijvingskaart */
+    .pd-beschr-card {
+      background: #fff;
+      border-radius: 16px;
+      border: 1.5px solid #e8e0d8;
+      padding: 36px 40px;
+      box-shadow: 0 1px 8px rgba(0,0,0,.05);
+    }
+    .pd-beschr-kop {
+      font-size: .72rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--oranje); margin-bottom: 16px;
+    }
+    .pd-beschrijving {
+      font-size: 1rem; color: var(--grijs);
+      line-height: 1.85; white-space: pre-wrap;
+    }
+    /* Crosssales sectie */
+    #pd-crosssales {
+      margin-top: 40px;
+    }
+    .pd-cs-kop {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--bruin-mid);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1.5px solid #ede8e2;
+    }
+    .pd-cs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+    }
+    /* ─── OFFERTE MODUS: verberg prijzen ─── */
+    .modus-offerte .zp-prijs,
+    .modus-offerte .pd-prijs-rij,
+    .modus-offerte .pd-btw-info,
+    .modus-offerte .pd-op-aanvraag,
+    .modus-offerte .wm-item-prijs,
+    .modus-offerte .wm-totaal-rij { display: none !important; }
+    /* Productkaart in offerte-modus: toon "Op aanvraag" tekst niet */
+    .modus-offerte .zp-op-aanvraag { display: none !important; }
+    /* Productpagina navigatiepijlen links/rechts */
+    .pd-nav-pijl {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      border: none;
+      background: #fff;
+      box-shadow: 0 4px 18px rgba(0,0,0,.18);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: var(--donker);
+      transition: background .15s, box-shadow .15s, transform .15s;
+    }
+    .pd-nav-pijl:hover {
+      background: var(--oranje);
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(0,0,0,.22);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .pd-nav-pijl.zichtbaar { display: flex; }
+    .pd-nav-pijl.links { left: calc(260px + 12px); }
+    .pd-nav-pijl.rechts { right: 18px; }
+    .pd-nav-teller {
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: .68rem;
+      color: #aaa;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    @media (max-width: 800px) {
+      .pd-main-grid { grid-template-columns: 1fr; gap: 28px; }
+      .pd-main-grid > div:first-child { align-items: center; }
+      .pd-pagina-body { padding: 24px 18px 56px; }
+      .pd-banner { padding: 0 18px; }
+      .pd-naam { font-size: 1.5rem; }
+      .pd-prijs { font-size: 2rem; }
+      .pd-beschr-card { padding: 24px 20px; }
+      .pd-nav-pijl { width: 44px; height: 44px; font-size: 1.2rem; }
+      .pd-nav-pijl.links { left: 8px; }
+      .pd-nav-pijl.rechts { right: 8px; }    }
+
+    /* ─── WINKELMANDJE ZIJPANEEL ─── */
+    .wm-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      display: flex;
+      align-items: stretch;
+      justify-content: flex-end;
+      pointer-events: none;
+    }
+    .wm-overlay.open { pointer-events: all; }
+    .wm-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(20,12,5,0.45);
+      opacity: 0;
+      transition: opacity .3s;
+      cursor: pointer;
+    }
+    .wm-overlay.open .wm-backdrop { opacity: 1; }
+    .wm-paneel {
+      position: relative;
+      width: min(420px, 100vw);
+      height: 100%;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+    }
+    .wm-overlay.open .wm-paneel { transform: translateX(0); }
+    .wm-header {
+      background: var(--donker);
+      color: #fff;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .wm-header h3 { flex: 1; font-size: 1.05rem; font-weight: 800; }
+    .wm-tabs {
+      display: flex;
+      border-bottom: 1.5px solid #f0ebe5;
+      flex-shrink: 0;
+    }
+    .wm-tab {
+      flex: 1;
+      padding: 11px 8px;
+      border: none;
+      background: #fff;
+      font-family: inherit;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #aaa;
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -1.5px;
+      transition: color .15s, border-color .15s;
+    }
+    .wm-tab:hover { color: var(--donker); }
+    .wm-tab.active { color: var(--oranje); border-bottom-color: var(--oranje); }
+    .of-hist-item {
+      border: 1.5px solid #f0ebe5;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: .85rem;
+    }
+    .of-hist-datum { font-size: .75rem; color: #bbb; margin-bottom: 4px; }
+    .of-hist-prod { color: var(--donker); font-weight: 600; margin-bottom: 2px; }
+    .of-hist-status {
+      display: inline-block;
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-top: 6px;
+      background: #f0ebe5;
+      color: #888;
+    }
+    .of-hist-status.verzonden { background: #fff3e0; color: var(--oranje); }
+    .wm-sluit {
+      background: rgba(255,255,255,.1);
+      border: none;
+      color: #fff;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-family: inherit;
+    }
+    .wm-sluit:hover { background: rgba(255,255,255,.22); }
+    .wm-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    .wm-items::-webkit-scrollbar { width: 5px; }
+    .wm-items::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    .wm-leeg {
+      text-align: center;
+      padding: 60px 20px;
+      color: #bbb;
+    }
+    .wm-leeg-icon { font-size: 3rem; margin-bottom: 12px; }
+    .wm-item {
+      display: flex;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #f0ece7;
+      align-items: flex-start;
+    }
+    .wm-item:last-child { border-bottom: none; }
+    .wm-item-img {
+      width: 60px; height: 60px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #f5f5f5;
+      border: 1px solid #eee;
+      flex-shrink: 0;
+      padding: 4px;
+    }
+    .wm-item-img-placeholder {
+      width: 60px; height: 60px;
+      border-radius: 8px;
+      background: #f5f5f5;
+      border: 1px solid #eee;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      color: #ccc;
+      flex-shrink: 0;
+    }
+    .wm-item-body { flex: 1; min-width: 0; }
+    .wm-item-naam { font-size: .93rem; font-weight: 700; color: var(--donker); line-height: 1.3; margin-bottom: 3px; }
+    .wm-item-code { font-size: .72rem; color: #bbb; font-family: monospace; margin-bottom: 6px; }
+    .wm-item-rij { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .wm-item-prijs { font-size: .92rem; font-weight: 700; color: var(--oranje); }
+    .wm-item-aantal {
+      display: flex; align-items: center;
+      border: 1.5px solid #e8e0d8;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-left: auto;
+    }
+    .wm-item-aantal button {
+      background: #f9f6f3;
+      border: none;
+      width: 26px; height: 26px;
+      font-size: .95rem;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .wm-item-aantal button:hover { background: #f0ece7; }
+    .wm-item-aantal span {
+      padding: 0 8px;
+      font-size: .88rem;
+      font-weight: 700;
+      border-left: 1px solid #eee;
+      border-right: 1px solid #eee;
+      min-width: 28px;
+      text-align: center;
+    }
+    .wm-item-verwijder {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 2px 4px;
+      transition: color .12s;
+      font-family: inherit;
+    }
+    .wm-item-verwijder:hover { color: #e74c3c; }
+    .wm-footer {
+      padding: 20px 20px;
+      border-top: 1px solid #ede8e2;
+      background: #faf8f6;
+      flex-shrink: 0;
+    }
+    .wm-totaal-rij {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+    .wm-totaal-label { font-size: .88rem; color: var(--grijs); }
+    .wm-totaal-prijs { font-size: 1.5rem; font-weight: 800; color: var(--donker); }
+    .wm-bestel-btn {
+      width: 100%;
+      background: var(--oranje);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 15px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+      font-family: inherit;
+    }
+    .wm-bestel-btn:hover { background: var(--oranje-hover); }
+    .wm-leegmaken-btn {
+      width: 100%;
+      background: none;
+      border: 1px solid #e0d8d0;
+      border-radius: 8px;
+      padding: 10px;
+      color: #aaa;
+      font-size: .85rem;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: inherit;
+      transition: border-color .15s, color .15s;
+    }
+    .wm-leegmaken-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+    /* Toast notificatie */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--donker);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: .9rem;
+      font-weight: 600;
+      z-index: 700;
+      opacity: 0;
+      transition: transform .3s, opacity .3s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .toast.zichtbaar {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .zp-img-wrap {
+      width: 100%; aspect-ratio: 1/1; background: #f8f8f8;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; flex-shrink: 0;
+    }
+    .zp-img-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 10px; box-sizing: border-box; }
+    .zp-img-placeholder { font-size: 3rem; color: #d0d4d8; }
+    .zp-body {
+      padding: 12px 14px 16px;
+      display: flex; flex-direction: column; flex: 1;
+      align-items: center; text-align: center;
+      background: linear-gradient(to bottom, #f4f6f8, #edf0f3);
+      border-top: 1px solid #c8d0d8;
+    }
+    .zoek-product-kaart .zp-naam { font-weight: 700; margin-bottom: 4px; color: #1a1a1a; line-height:1.3; font-size:.92rem; }
+    .zoek-product-kaart .zp-code { font-size: .72rem; color: #bbb; font-family: monospace; margin-bottom: 6px; }
+    .zoek-product-kaart .zp-beschrijving { font-size: .78rem; color: #888; margin: 4px 0 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .zoek-product-kaart .zp-prijs { font-size: 1.15rem; font-weight: 800; color: var(--oranje); margin-top: auto; padding-top: 8px; }
+    .zoek-product-kaart .zp-eenheid { font-size: .75rem; color: #aaa; margin-left: 3px; font-weight: 500; }
+    .zoek-product-kaart .zp-groep { font-size: .7rem; background: #f0ece7; color: #8b5e3c; padding: 2px 8px; border-radius: 10px; display:inline-block; margin-top:6px; }
+    .zoek-product-kaart .zp-op-aanvraag { color: #bbb; font-size: .85rem; font-weight: 600; margin-top: auto; padding-top: 8px; }
+    .cat-producten-header { display: flex; align-items: center; padding: 0 0 12px; }
+    .cat-producten-aantal { font-size: .8rem; color: #aaa; font-weight: 600; letter-spacing: .3px; }
+    .pagina-wrapper {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+    .pagina-hoofd {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── FOOTER ─── */
+    .site-footer {
+      background: var(--donker);
+      color: rgba(255,255,255,0.6);
+      font-size: .82rem;
+      padding: 12px 40px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+    .footer-label {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--oranje);
+      font-weight: 700;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+    .footer-tijden {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+      flex: 1;
+    }
+    .footer-tijd-item {
+      display: flex;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .footer-tijd-item span:first-child { color: rgba(255,255,255,0.35); }
+    .footer-copy {
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+      color: rgba(255,255,255,0.25);
+    }
+    .btn-werkzaamheden {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 22px;
+      background: var(--oranje);
+      color: #fff;
+      border-radius: 999px;
+      font-size: .85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: background .2s, transform .15s;
+    }
+    .btn-werkzaamheden:hover {
+      background: #c9620a;
+      transform: translateY(-2px);
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      position: relative;
+      min-height: 52vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 56px 48px 80px;
+      color: #fff;
+      overflow: hidden;
+      flex-shrink: 0;
+      background:
+        linear-gradient(160deg, rgba(20,10,4,0.84) 0%, rgba(44,32,23,0.78) 100%),
+        repeating-linear-gradient(
+          93deg,
+          transparent 0px, transparent 58px,
+          rgba(180,100,20,0.05) 58px, rgba(180,100,20,0.05) 59px
+        ),
+        repeating-linear-gradient(
+          180deg,
+          transparent 0px, transparent 72px,
+          rgba(120,70,20,0.04) 72px, rgba(120,70,20,0.04) 74px
+        ),
+        linear-gradient(170deg, #5c2e08 0%, #8b4a18 25%, #4a2508 55%, #2c1a08 100%);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 55% at 50% 38%, rgba(224,123,42,0.13) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(224,123,42,0.13);
+      border: 1px solid rgba(224,123,42,0.4);
+      color: #f5b87a;
+      border-radius: 999px;
+      padding: 6px 20px;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5.5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.5px;
+      margin-bottom: 20px;
+      max-width: 820px;
+    }
+    .hero h1 em { font-style: normal; color: var(--oranje); }
+
+    .hero-sub {
+      font-size: clamp(.95rem, 2vw, 1.18rem);
+      color: rgba(255,255,255,0.65);
+      max-width: 580px;
+      line-height: 1.75;
+      margin-bottom: 44px;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn-primary {
+      background: var(--oranje);
+      color: #fff;
+      padding: 15px 34px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      box-shadow: 0 4px 22px rgba(224,123,42,0.42);
+      transition: background .15s, transform .15s, box-shadow .15s;
+    }
+    .btn-primary:hover { background: var(--oranje-hover); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(224,123,42,0.52); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.09);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      padding: 15px 34px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.22);
+      transition: background .15s, transform .15s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.17); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 64px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-stat strong {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1;
+    }
+    .hero-stat span {
+      font-size: .75rem;
+      color: rgba(255,255,255,0.42);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-top: 4px;
+      display: block;
+    }
+    .hero-sep {
+      width: 1px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .hero-scroll { display: none; }
+
+    /* ─── CAT HEADER ─── */
+    .cat-header {
+      display: none;
+      background: linear-gradient(135deg, var(--bruin) 0%, var(--bruin-mid) 100%);
+      color: #fff;
+      padding: 24px 40px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .cat-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 0;
+    }
+
+    /* ─── USP BAR ─── */
+    .usp-bar {
+      background: var(--grijs-licht);
+      padding: 0 40px 24px;
+      flex-shrink: 0;
+    }
+    .usp-pill {
+      background: var(--bruin);
+      border-radius: 999px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+    }
+    .usp-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 28px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      transition: background .15s;
+      color: #fff;
+    }
+    .usp-item:last-child { border-right: none; }
+    .usp-item:hover { background: rgba(255,255,255,0.07); }
+    .usp-icon { font-size: 1.7rem; flex-shrink: 0; }
+    .usp-tekst strong { display: block; font-size: .93rem; font-weight: 700; margin-bottom: 2px; }
+    .usp-tekst span { font-size: .8rem; color: rgba(255,255,255,0.5); }
+
+    /* ─── WERKZAAMHEDEN SLIDER ─── */
+    .slider-sectie {
+      background: var(--grijs-licht);
+      padding: 28px 40px 36px;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .slider-kop {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .slider-kop h3 {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--oranje);
+      margin-bottom: 6px;
+    }
+    .slider-kop p {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--donker);
+      margin: 0;
+    }
+    .slider-pill {
+      background: #e4ddd6;
+      border-radius: 999px;
+      padding: 20px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .slider-track-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+    .slider-track-wrapper::before,
+    .slider-track-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .slider-track-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, #e4ddd6 0%, transparent 100%);
+    }
+    .slider-track-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, #e4ddd6 0%, transparent 100%);
+    }
+    .slider-track {
+      display: flex;
+      gap: 14px;
+      width: max-content;
+      animation: slider-scroll 30s linear infinite;
+    }
+    .slider-track:hover { animation-play-state: paused; }
+    @keyframes slider-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .slider-slide {
+      width: 240px;
+      height: 165px;
+      border-radius: 12px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+      border: 2px solid transparent;
+      transition: transform .2s, border-color .2s;
+    }
+    .slider-slide:hover { transform: scale(1.04); border-color: var(--oranje); }
+    .slider-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .slider-leeg {
+      text-align: center;
+      color: #bbb;
+      font-size: .88rem;
+      padding: 20px;
+    }
+
+    /* ─── ASSORTIMENT SECTIE ─── */
+    .assortiment-sectie { padding: 48px 0 0; background: var(--grijs-licht); flex: 1; }
+    .sectie-kop { padding: 0 36px 28px; }
+    .sectie-kop h2 { font-size: 1.8rem; font-weight: 800; color: var(--donker); line-height: 1.15; }
+    .sectie-kop h2 em { font-style: normal; color: var(--oranje); }
+    .sectie-kop p { color: var(--grijs); font-size: .95rem; margin-top: 8px; }
+
+    /* ─── CATEGORIE BROWSER ─── */
+    .cat-sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #ddd6cc;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .cat-sidebar-titel {
+      padding: 16px 20px 12px;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--bruin-mid);
+      border-bottom: 1px solid #ece5dc;
+      flex-shrink: 0;
+      background: var(--oranje-licht);
+    }
+    .cat-lijst {
+      flex: 1;
+      overflow-y: auto;
+      padding: 6px 0;
+    }
+    .cat-lijst::-webkit-scrollbar { width: 4px; }
+    .cat-lijst::-webkit-scrollbar-track { background: transparent; }
+    .cat-lijst::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+
+    .cat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      min-height: 54px;
+      cursor: pointer;
+      transition: background .12s;
+      border-left: 3px solid transparent;
+      color: #333;
+    }
+    .cat-item:hover { background: #f7f7f7; }
+    .cat-item.actief {
+      background: var(--oranje-licht);
+      border-left-color: var(--oranje);
+      color: var(--donker);
+      font-weight: 600;
+    }
+    .cat-thumb {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: #eee;
+      flex-shrink: 0;
+    }
+    .cat-thumb-icon {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .cat-naam { flex: 1; font-size: .93rem; line-height: 1.3; word-break: break-word; }
+    .cat-pijl { color: #ccc; font-size: .9rem; transition: transform .2s; flex-shrink: 0; }
+    .cat-item.open .cat-pijl { transform: rotate(90deg); }
+
+    .cat-sub { overflow: hidden; }
+    .cat-item.lvl2 { padding-left: 28px; min-height: 44px; padding-top: 6px; padding-bottom: 6px; background: #f7f0e8; }
+    .cat-item.lvl2 .cat-thumb, .cat-item.lvl2 .cat-thumb-icon { width: 28px; height: 28px; font-size: 1rem; }
+    .cat-item.lvl2 .cat-naam { font-size: .88rem; }
+    .cat-item.lvl3 { padding-left: 52px; min-height: 38px; padding-top: 5px; padding-bottom: 5px; background: #f0e8dd; }
+    .cat-item.lvl3 .cat-thumb, .cat-item.lvl3 .cat-thumb-icon { width: 24px; height: 24px; font-size: .85rem; }
+    .cat-item.lvl3 .cat-naam { font-size: .85rem; color: var(--grijs); }
+
+    .content { display: flex; flex-direction: column; overflow: hidden; background: var(--grijs-licht); }
+
+    .content-body { flex: 1; overflow-y: auto; padding: 32px 28px 56px; }
+    .sectie-titel { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; color: var(--donker); }
+
+    /* ─── TEGELS ─── */
+    .tegel-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+    .tegel {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 1px 5px rgba(92,51,23,0.08);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 28px 16px 20px;
+      gap: 14px;
+      transition: box-shadow .15s, transform .15s, border-color .15s;
+      border: 2px solid transparent;
+      text-align: center;
+    }
+    .tegel:hover {
+      box-shadow: 0 6px 20px rgba(92,51,23,0.15);
+      transform: translateY(-3px);
+      border-color: rgba(224,123,42,0.28);
+    }
+    .tegel-img { width: 100px; height: 100px; border-radius: 10px; object-fit: cover; background: #f0f0f0; }
+    .tegel-icon {
+      width: 100px; height: 100px;
+      border-radius: 10px;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+    }
+    .tegel-naam { font-size: .9rem; font-weight: 600; color: var(--donker); line-height: 1.3; }
+    .tegel-pijl { font-size: .75rem; color: var(--bruin-mid); }
+
+    .leeg { text-align: center; padding: 60px; color: #aaa; }
+    .leeg .emoji { font-size: 3rem; margin-bottom: 12px; }
+    .laden { color: #aaa; padding: 40px; text-align: center; }
+
+    /* ─── CONTACT VIEW ─── */
+    #sectie-contact {
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      background: var(--grijs-licht);
+    }
+    .contact-banner {
+      background: linear-gradient(135deg, var(--bruin) 0%, var(--bruin-mid) 100%);
+      color: #fff;
+      padding: 28px 48px;
+      flex-shrink: 0;
+    }
+    .contact-banner h2 { font-size: 1.7rem; font-weight: 800; margin: 0 0 4px; }
+    .contact-banner p { font-size: .9rem; color: rgba(255,255,255,0.55); margin: 0; }
+    .contact-body {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 48px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .contact-gegevens-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .contact-blok {
+      padding: 28px 32px;
+      border-right: 1px solid #ede8e2;
+      border-bottom: 1px solid #ede8e2;
+    }
+    .contact-blok:nth-child(2n) { border-right: none; }
+    .contact-blok:nth-last-child(-n+2) { border-bottom: none; }
+    .contact-blok-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--oranje);
+      margin-bottom: 8px;
+    }
+    .contact-blok-waarde {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--donker);
+      line-height: 1.5;
+    }
+    .contact-blok-waarde a { color: var(--donker); text-decoration: none; }
+    .contact-blok-waarde a:hover { color: var(--oranje); }
+    .contact-blok-vol {
+      grid-column: 1 / -1;
+      padding: 28px 32px;
+      border-bottom: 1px solid #ede8e2;
+    }
+    .contact-blok-vol:last-child { border-bottom: none; }
+    .wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #25D366;
+      color: #fff;
+      border-radius: 10px;
+      padding: 14px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 4px;
+      transition: background .15s, transform .15s;
+    }
+    .wa-btn:hover { background: #1ebe5a; transform: translateY(-2px); }
+    .wa-btn svg { width: 22px; height: 22px; fill: #fff; flex-shrink: 0; }
+    .contact-tijden-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .openings-rij {
+      display: flex;
+      justify-content: space-between;
+      font-size: .95rem;
+      color: var(--grijs);
+      padding: 7px 0;
+      border-bottom: 1px solid #ede8e2;
+    }
+    .openings-rij:last-child { border-bottom: none; }
+    .openings-rij span:first-child { color: #aaa; }
+    .contact-map-col {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+      height: 300px;
+      margin-bottom: 32px;
+    }
+    .contact-map-col iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .contact-strip {
+      border-top: 1px solid #ede8e2;
+      text-align: center;
+      padding: 16px 24px;
+      font-size: .8rem;
+      color: #bbb;
+      flex-shrink: 0;
+      background: #fff;
+    }
+
+    /* ─── BEZORGKEUZE OVERLAY ─── */
+    #bk-overlay {
+      position: fixed; inset: 0; z-index: 900;
+      background: rgba(20,14,8,0.72);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+    }
+    #bk-modal {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      max-width: 460px; width: 100%;
+      overflow: hidden;
+      animation: bkIn .25s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes bkIn {
+      from { transform: scale(.88) translateY(20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .bk-header {
+      background: var(--donker);
+      padding: 28px 32px 22px;
+      text-align: center;
+    }
+    .bk-logo { font-size: 2.4rem; margin-bottom: 6px; }
+    .bk-header h2 { color: #fff; font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+    .bk-header p { color: rgba(255,255,255,.55); font-size: .82rem; }
+    .bk-body { padding: 28px 32px 32px; }
+    #bk-stap-postcode { display: block; }
+    #bk-stap-keuze    { display: none; }
+    .bk-status {
+      display: none; border-radius: 10px;
+      padding: 11px 14px; margin-bottom: 14px;
+      font-size: .85rem; font-weight: 600;
+      line-height: 1.45;
+    }
+    .bk-status.beschikbaar { background: #eafaf1; color: #1d7a45; border: 1.5px solid #a8e6c0; }
+    .bk-status.geblokkeerd { background: #fdf2f2; color: #b03030; border: 1.5px solid #f0b0b0; }
+    .bk-status.onbekend   { background: #fef9ec; color: #8a6000; border: 1.5px solid #f5dd8a; }
+    .bk-opt-uitgeschakeld {
+      opacity: .38; pointer-events: none; cursor: not-allowed;
+    }
+    .bk-label {
+      font-size: .75rem; font-weight: 700; color: #888;
+      text-transform: uppercase; letter-spacing: .05em;
+      display: block; margin-bottom: 8px;
+    }
+    #bk-pc-input {
+      width: 100%; padding: 13px 16px;
+      border: 2px solid #e0dbd5; border-radius: 10px;
+      font-size: 1.05rem; font-family: inherit; outline: none;
+      text-transform: uppercase; letter-spacing: .05em;
+      transition: border-color .15s;
+      box-sizing: border-box;
+    }
+    #bk-pc-input:focus { border-color: var(--oranje); }
+    #bk-pc-fout { color: #c0392b; font-size: .82rem; min-height: 1.1em; display: block; margin-top: 6px; }
+    .bk-opties {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+      margin-top: 4px;
+    }
+    .bk-optie {
+      border: 2.5px solid #e0dbd5; border-radius: 14px;
+      padding: 22px 14px; text-align: center;
+      cursor: pointer; transition: border-color .15s, background .15s, transform .15s;
+      background: #faf8f6;
+    }
+    .bk-optie:hover {
+      border-color: var(--oranje); background: #fff8f2;
+      transform: translateY(-3px);
+    }
+    .bk-optie.geselecteerd {
+      border-color: var(--oranje); background: #fff4ea;
+    }
+    .bk-optie-icon { font-size: 2.4rem; margin-bottom: 10px; }
+    .bk-optie-titel { font-weight: 800; font-size: .97rem; color: var(--donker); margin-bottom: 3px; }
+    .bk-optie-sub   { font-size: .75rem; color: #aaa; }
+    .bk-doorgaan {
+      width: 100%; margin-top: 22px;
+      background: var(--oranje); color: #fff;
+      border: none; border-radius: 10px;
+      padding: 14px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+      transition: background .15s;
+    }
+    .bk-doorgaan:hover { background: var(--oranje-hover); }
+    .bk-doorgaan:disabled { background: #ccc; cursor: not-allowed; }
+    /* Badge in header */
+    #bk-badge {
+      display: none;
+      align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px; padding: 6px 14px;
+      cursor: pointer; border: none;
+      color: rgba(255,255,255,0.8); font-size: .82rem; font-weight: 600;
+      font-family: inherit; transition: background .15s;
+    }
+    #bk-badge:hover { background: rgba(255,255,255,0.22); color: #fff; }
+</style>
+</head>
+<body>
+
+  <!-- NOTIFICATIEBALK -->
+  <div id="notificatie-balk"></div>
+
+  <!-- HEADER -->
+  <header>
+    <nav class="header-nav-links">
+      <a href="#" onclick="toonAlleProducten(1);return false;">Assortiment</a>
+    </nav>
+    <div class="header-logo" onclick="naarHome()">
+      <div class="header-logo-title" style="color:#fff">HOUTHANDEL &amp; STAALBOUW</div>
+      <div class="header-logo-title">VEENSTRA</div>
+      <div class="header-logo-slogan">voor de handige en niet handige doe het zelver</div>
+    </div>
+    <nav class="header-nav-rechts">
+      <a href="#" onclick="toonContact();return false;">Contact</a>
+      <button class="wm-btn" onclick="openWinkelmandje()" title="Winkelmandje">
+        &#128722; Mandje
+        <span class="wm-badge" id="wm-badge">0</span>
+      </button>
+      <button id="bk-badge" onclick="bkHeropenen()" title="Bezorgkeuze wijzigen"></button>
+      <div class="header-account" id="header-account">
+        <a href="/login.html" class="btn-login" id="nav-inloggen">Inloggen</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- BEZORGKEUZE OVERLAY -->
+  <div id="bk-overlay" style="display:none">
+    <div id="bk-modal">
+      <div class="bk-header">
+        <div class="bk-logo">&#128666;</div>
+        <h2>Welkom bij Houthandel Veenstra</h2>
+        <p>Hoe wilt u uw bestelling ontvangen?</p>
+      </div>
+      <div class="bk-body">
+        <!-- Stap 1: postcode (alleen voor niet-ingelogde bezoekers) -->
+        <div id="bk-stap-postcode">
+          <label class="bk-label" for="bk-pc-input">Uw postcode</label>
+          <input type="text" id="bk-pc-input" placeholder="bijv. 9711 AB" maxlength="7"
+            onkeydown="if(event.key==='Enter')bkNaarKeuze()" />
+          <span id="bk-pc-fout"></span>
+          <button class="bk-doorgaan" onclick="bkNaarKeuze()">Doorgaan &rsaquo;</button>
+        </div>
+        <!-- Stap 2: bezorgen of afhalen -->
+        <div id="bk-stap-keuze">
+          <div id="bk-check-status" class="bk-status"></div>
+          <label class="bk-label">Hoe wilt u uw bestelling ontvangen?</label>
+          <div class="bk-opties">
+            <div class="bk-optie" id="bk-opt-afhaal" onclick="bkSelecteer('afhaal')">
+              <div class="bk-optie-icon">&#127968;</div>
+              <div class="bk-optie-titel">Afhalen</div>
+              <div class="bk-optie-sub">Zelf ophalen in de winkel</div>
+            </div>
+            <div class="bk-optie" id="bk-opt-bezorgen" onclick="bkSelecteer('bezorgen')">
+              <div class="bk-optie-icon">&#128666;</div>
+              <div class="bk-optie-titel">Bezorgen</div>
+              <div class="bk-optie-sub">Wij brengen het naar u toe</div>
+            </div>
+          </div>
+          <button class="bk-doorgaan" id="bk-bevestig-btn" onclick="bkBevestigen()" disabled>Bevestigen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ZOEKBALK -->
+  <div id="site-zoekbalk">
+    <div class="site-zoek-inner">
+      <input id="site-zoek-input" type="text" placeholder="&#128269; Zoek op product, afmeting, artikelcode…" autocomplete="off"
+        oninput="siteZoekDebounce()" onkeydown="if(event.key==='Enter')siteZoek()" />
+      <button id="site-zoek-btn" onclick="siteZoek()" title="Zoeken">&#128269;</button>
+    </div>
+  </div>
+
+  <div class="pagina-wrapper">
+
+    <!-- SIDEBAR (loopt door naast hele pagina) -->
+    <aside class="cat-sidebar">
+      <div class="cat-sidebar-titel">Categorie&euml;n</div>
+      <div class="cat-lijst" id="cat-lijst">
+        <div class="laden">Laden&hellip;</div>
+      </div>
+    </aside>
+
+    <!-- SCROLLBARE RECHTERKOLOM -->
+    <div class="pagina-hoofd">
+
+  <!-- HERO -->
+  <section class="hero" id="hero-sectie">
+    <div class="hero-badge">&#127795; Houthandel &amp; Staalbouw Veenstra</div>
+
+    <h1>Uw specialist in<br><em>hout &amp; staal</em></h1>
+
+    <p class="hero-sub">
+      Van vuren constructiehout tot hardhout, lariks en ge&iuml;mpregneerd hout &mdash; en alles op het gebied van staalbouw.
+      Grote voorraad, scherpe prijzen en vakkundig advies voor professional en particulier.
+    </p>
+
+    <div class="hero-btns">
+      <a href="#" class="btn-primary"
+         onclick="toonAlleProducten(1);return false;">
+        Bekijk assortiment
+      </a>
+      <a href="#" class="btn-ghost" onclick="toonContact();return false;">Contact opnemen</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <strong>266+</strong>
+        <span>Productgroepen</span>
+      </div>
+      <div class="hero-sep"></div>
+      <div class="hero-stat">
+        <strong>14</strong>
+        <span>Hoofdcategorie&euml;n</span>
+      </div>
+      <div class="hero-sep"></div>
+      <div class="hero-stat">
+        <strong>&infin;</strong>
+        <span>Op voorraad</span>
+      </div>
+    </div>
+
+    <div class="hero-scroll"
+         onclick="toonAlleProducten(1)">
+      Scroll
+    </div>
+  </section>
+
+  <!-- USP BAR -->
+  <div class="usp-bar" id="usp-bar">
+    <div class="usp-pill">
+      <div class="usp-item">
+        <span class="usp-icon">&#128230;</span>
+        <div class="usp-tekst">
+          <strong>Grote voorraad</strong>
+          <span>Direct leverbaar</span>
+        </div>
+      </div>
+      <div class="usp-item">
+        <span class="usp-icon">&#128666;</span>
+        <div class="usp-tekst">
+          <strong>Snelle levering</strong>
+          <span>Bezorging op locatie</span>
+        </div>
+      </div>
+      <div class="usp-item">
+        <span class="usp-icon">&#128172;</span>
+        <div class="usp-tekst">
+          <strong>Vakkundig advies</strong>
+          <span>Persoonlijke service</span>
+        </div>
+      </div>
+      <div class="usp-item">
+        <span class="usp-icon">&#127959;</span>
+        <div class="usp-tekst">
+          <strong>Pro &amp; particulier</strong>
+          <span>Voor iedereen welkom</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAANDAANBIEDINGEN -->
+  <div id="aanb-sectie" style="display:none">
+    <div class="aanb-sectie-wrap">
+      <div class="aanb-kop">
+        <h3>&#127991;&#65039; Aanbiedingen van de maand</h3>
+        <p class="aanb-sub" id="aanb-maand-label"></p>
+      </div>
+      <div class="zoek-product-grid" id="aanb-grid"></div>
+    </div>
+  </div>
+
+  <!-- WERKZAAMHEDEN SLIDER -->
+  <div class="slider-sectie" id="slider-sectie">
+    <div class="slider-kop">
+      <h3>Werkzaamheden</h3>
+      <p>Een kijk in onze werkzaamheden</p>
+      <a href="/werkzaamheden.html" class="btn-werkzaamheden">Bekijk alle werkzaamheden →</a>
+    </div>
+    <div class="slider-pill">
+      <div class="slider-track-wrapper">
+        <div class="slider-track" id="slider-track"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAT HEADER -->
+  <div class="cat-header" id="cat-header">
+    <h2 id="cat-header-naam"></h2>
+  </div>
+
+  <!-- ASSORTIMENT -->
+  <section class="assortiment-sectie" id="assortiment">
+    <div class="content">
+      <div class="content-body">
+        <div id="inhoud"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT VIEW -->
+  <div id="sectie-contact" style="display:none">
+    <div class="contact-banner" style="text-align:center">
+      <h2>Contact</h2>
+    </div>
+
+    <div class="contact-body">
+
+      <!-- GEGEVENS BLOKKEN -->
+      <div class="contact-gegevens-grid">
+        <div class="contact-blok">
+          <div class="contact-blok-label">&#128205; Adres</div>
+          <div class="contact-blok-waarde" id="c-adres">Laden&hellip;</div>
+        </div>
+        <div class="contact-blok">
+          <div class="contact-blok-label">&#128222; Telefoon</div>
+          <div class="contact-blok-waarde"><a id="c-telefoon" href="#"></a></div>
+        </div>
+        <div class="contact-blok">
+          <div class="contact-blok-label">&#9993; E-mail</div>
+          <div class="contact-blok-waarde"><a id="c-email" href="#"></a></div>
+        </div>
+        <div class="contact-blok">
+          <div class="contact-blok-label">&#128451; KvK-nummer</div>
+          <div class="contact-blok-waarde" id="c-kvk"></div>
+        </div>
+        <div class="contact-blok-vol">
+          <div class="contact-blok-label">&#128172; Direct contact</div>
+          <a id="c-wa-btn" class="wa-btn" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            WhatsApp ons
+          </a>
+        </div>
+      </div>
+
+      <!-- OPENINGSTIJDEN -->
+      <div class="contact-tijden-grid">
+        <div>
+          <div class="contact-blok-label" style="margin-bottom:12px">&#128336; Openingstijden</div>
+          <div id="c-openingstijden"></div>
+        </div>
+        <div id="c-aangepast-wrap" style="display:none">
+          <div class="contact-blok-label" style="margin-bottom:12px">&#128197; Bijzondere tijden</div>
+          <div id="c-aangepast"></div>
+        </div>
+      </div>
+
+      <!-- KAART -->
+      <div class="contact-map-col" style="margin-top:32px">
+        <iframe id="c-map" src="" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- PRODUCT PAGINA -->
+  <div id="sectie-product" style="display:none">
+    <div class="pd-banner">
+      <button class="pd-terug-btn" onclick="sluitProductPagina()">&#8592; Terug</button>
+      <div class="pd-banner-info">
+        <div class="pd-banner-titel" id="pd-banner-titel">Product</div>
+        <div class="pd-banner-cat" id="pd-banner-cat"></div>
+      </div>
+    </div>
+    <div class="pd-pagina-body" id="pd-pagina-body">
+      <!-- ingevuld door JS -->
+    </div>
+  </div>
+
+  <!-- PRODUCT NAV PIJLEN (fixed, buiten pagina-hoofd) -->
+  <button class="pd-nav-pijl links" id="pd-nav-links" onclick="pdNavigeer(-1)" aria-label="Vorig product">
+    &#8249;
+    <span class="pd-nav-teller" id="pd-nav-teller-links"></span>
+  </button>
+  <button class="pd-nav-pijl rechts" id="pd-nav-rechts" onclick="pdNavigeer(1)" aria-label="Volgend product">
+    &#8250;
+    <span class="pd-nav-teller" id="pd-nav-teller-rechts"></span>
+  </button>
+
+    </div><!-- /pagina-hoofd -->
+  </div><!-- /pagina-wrapper -->
+
+  <!-- WINKELMANDJE OVERLAY -->
+  <div class="wm-overlay" id="wm-overlay">
+    <div class="wm-backdrop" onclick="sluitWinkelmandje()"></div>
+    <div class="wm-paneel">
+      <div class="wm-header">
+        <h3>&#128722; Winkelmandje</h3>
+        <button class="wm-sluit" onclick="sluitWinkelmandje()">&#10005;</button>
+      </div>
+      <div class="wm-tabs">
+        <button class="wm-tab active" id="wm-tab-mandje" onclick="wmTabWissel('mandje')">&#128722; Mandje</button>
+        <button class="wm-tab" id="wm-tab-offertes" onclick="wmTabWissel('offertes')">&#128203; Offertes</button>
+      </div>
+      <div class="wm-items" id="wm-items"></div>
+      <div class="wm-items" id="wm-offertes-inhoud" style="display:none"></div>
+      <div class="wm-footer" id="wm-footer" style="display:none">
+        <div class="wm-totaal-rij">
+          <span class="wm-totaal-label">Totaal (excl. btw)</span>
+          <span class="wm-totaal-prijs" id="wm-totaal"></span>
+        </div>
+        <button class="wm-bestel-btn" onclick="bestellen()" id="wm-bestel-btn">Bestelling versturen &#8594;</button>
+        <button class="wm-leegmaken-btn" onclick="leegMakenBevestig()">Mandje leegmaken</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- OFFERTE FORMULIER MODAL -->
+  <div id="offerte-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center;padding:16px">
+    <div style="background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.2)">
+      <div style="padding:22px 24px 16px;border-bottom:1.5px solid #f0ebe5">
+        <div style="font-size:1.05rem;font-weight:800;color:#1a1a1a">&#128203; Offerte aanvragen</div>
+        <div style="font-size:.82rem;color:#aaa;margin-top:3px" id="of-producten-kop"></div>
+      </div>
+      <div style="padding:20px 24px">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <label for="of-naam" style="font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Naam *</label>
+            <input type="text" id="of-naam" placeholder="Uw naam" autocomplete="name"
+              style="width:100%;padding:10px 12px;border:1.5px solid #e0dbd5;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='var(--oranje)'" onblur="this.style.borderColor='#e0dbd5'" />
+          </div>
+          <div>
+            <label for="of-email" style="font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">E-mail *</label>
+            <input type="email" id="of-email" placeholder="uw@email.nl" autocomplete="email"
+              style="width:100%;padding:10px 12px;border:1.5px solid #e0dbd5;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='var(--oranje)'" onblur="this.style.borderColor='#e0dbd5'" />
+          </div>
+          <div>
+            <label for="of-telefoon" style="font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Telefoon</label>
+            <input type="tel" id="of-telefoon" placeholder="Optioneel" autocomplete="tel"
+              style="width:100%;padding:10px 12px;border:1.5px solid #e0dbd5;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;transition:border-color .15s"
+              onfocus="this.style.borderColor='var(--oranje)'" onblur="this.style.borderColor='#e0dbd5'" />
+          </div>
+          <div>
+            <label for="of-bericht" style="font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px">Opmerking</label>
+            <textarea id="of-bericht" placeholder="Eventuele opmerkingen of vragen…" rows="3"
+              style="width:100%;padding:10px 12px;border:1.5px solid #e0dbd5;border-radius:8px;font-size:.9rem;font-family:inherit;box-sizing:border-box;outline:none;resize:vertical;transition:border-color .15s"
+              onfocus="this.style.borderColor='var(--oranje)'" onblur="this.style.borderColor='#e0dbd5'"></textarea>
+          </div>
+        </div>
+        <div id="of-fout" style="display:none;color:#e74c3c;font-size:.83rem;margin-top:10px;padding:8px 12px;background:#fff0f0;border-radius:6px"></div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button onclick="offerteModalSluit()" style="flex:1;padding:12px;border:1.5px solid #e0dbd5;border-radius:9px;background:#fff;font-size:.9rem;font-weight:600;cursor:pointer;color:#888">Annuleren</button>
+          <button onclick="offerteVerstuur()" id="of-verstuur-btn" style="flex:2;padding:12px;border:none;border-radius:9px;background:var(--oranje);color:#fff;font-size:.9rem;font-weight:700;cursor:pointer">Offerte aanvragen &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <span class="footer-label">Openingstijden</span>
+    <div class="footer-tijden" id="footer-tijden"><span style="color:rgba(255,255,255,0.3)">Laden…</span></div>
+    <div style="margin:12px 0 4px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap">
+      <a href="/werkzaamheden.html" style="color:rgba(255,255,255,0.6);font-size:.82rem;text-decoration:none">Werkzaamheden</a>
+      <a href="/service.html" style="color:rgba(255,255,255,0.6);font-size:.82rem;text-decoration:none">Service</a>
+    </div>
+    <span class="footer-copy">&copy; <span id="footer-jaar"></span> <span id="footer-bedrijf">Houthandel &amp; Staalbouw Veenstra</span></span>
+  </footer>
+
+  <script>
+    const cache = {};
+    const _huidigJaar = new Date().getFullYear();
+    document.querySelectorAll('#footer-jaar, #c-jaar').forEach(el => el.textContent = _huidigJaar);
+    const openSet = new Set();
+    let actieveId = null;
+    let _aanbTonen = false;
+    let _alleProductenPagina = 1;
+    let _huidigGroepId = null;
+    let _huidigGroepNaam = null;
+    const stapel = [{ id: null, naam: 'Alle categorie\u00EBn' }];
+
+    function esc(n) { return n.replace(/'/g, "\\'"); }
+
+    function thumbHtml(id, cls) {
+      return `<img class="cat-thumb ${cls}" src="/api/groepen/${id}/afbeelding" alt=""
+        onerror="this.outerHTML='<div class=\\'cat-thumb-icon ${cls}\\'>&#128194;</div>'" />`;
+    }
+
+    function itemHtml(g, niveau) {
+      const lvl = niveau === 2 ? 'lvl2' : niveau === 3 ? 'lvl3' : '';
+      const pijl = g.heeft_kinderen ? '<span class="cat-pijl">\u203A</span>' : '';
+      return `<div class="cat-item ${lvl}" data-id="${g.id}"
+        onclick="klik(${g.id},'${esc(g.naam)}',${g.heeft_kinderen},${niveau})">
+        ${thumbHtml(g.id, lvl)}
+        <span class="cat-naam">${g.naam}</span>${pijl}
+      </div>`;
+    }
+
+    async function haal(parentId) {
+      const key = parentId === null ? 'null' : parentId;
+      if (cache[key]) return cache[key];
+      try {
+        const data = await fetch(`/api/groepen?parent_id=${key}`).then(r => r.json());
+        cache[key] = Array.isArray(data) ? data : [];
+      } catch(e) { cache[key] = []; }
+      return cache[key];
+    }
+
+    function verstuurFormulier() {}
+
+    /* ─── TOAST ─── */
+    let toastTimer = null;
+    function toonToast(tekst) {
+      const t = document.getElementById('toast');
+      t.textContent = tekst;
+      t.classList.add('zichtbaar');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('zichtbaar'), 2200);
+    }
+
+    /* ─── WINKELMANDJE (localStorage) ─── */
+    function wmLaad() {
+      try { return JSON.parse(localStorage.getItem('winkelmandje') || '[]'); } catch(e) { return []; }
+    }
+    function wmSla(items) {
+      localStorage.setItem('winkelmandje', JSON.stringify(items));
+      wmUpdateBadge();
+    }
+    function wmUpdateBadge() {
+      const items = wmLaad();
+      const totaal = items.reduce((s, i) => s + i.aantal, 0);
+      const badge = document.getElementById('wm-badge');
+      badge.textContent = totaal;
+      badge.style.display = totaal > 0 ? 'flex' : 'none';
+    }
+    function wmToevoegen(product, aantal) {
+      const items = wmLaad();
+      const bestaand = items.find(i => i.id === product.id);
+      if (bestaand) {
+        bestaand.aantal += aantal;
+      } else {
+        items.push({
+          id: product.id,
+          naam: product.naam,
+          artikelcode: product.artikelcode || '',
+          prijs: product.prijs,
+          eenheid: product.eenheid || '',
+          afbeelding: product.afbeelding || '',
+          aantal
+        });
+      }
+      wmSla(items);
+      toonToast('&#10003; ' + product.naam + ' toegevoegd');
+    }
+    function wmAantalWijzig(id, delta) {
+      const items = wmLaad();
+      const item = items.find(i => i.id === id);
+      if (!item) return;
+      item.aantal = Math.max(1, item.aantal + delta);
+      wmSla(items);
+      renderWinkelmandje();
+    }
+    function wmVerwijder(id) {
+      const items = wmLaad().filter(i => i.id !== id);
+      wmSla(items);
+      renderWinkelmandje();
+    }
+    function leegMakenBevestig() {
+      if (confirm('Winkelmandje leegmaken?')) {
+        wmSla([]);
+        renderWinkelmandje();
+      }
+    }
+    let _wmActieveTab = 'mandje';
+    function wmTabWissel(tab) {
+      _wmActieveTab = tab;
+      document.getElementById('wm-tab-mandje').classList.toggle('active', tab === 'mandje');
+      document.getElementById('wm-tab-offertes').classList.toggle('active', tab === 'offertes');
+      document.getElementById('wm-items').style.display = tab === 'mandje' ? '' : 'none';
+      document.getElementById('wm-footer').style.display = (tab === 'mandje' && wmLaad().length > 0) ? 'block' : 'none';
+      document.getElementById('wm-offertes-inhoud').style.display = tab === 'offertes' ? '' : 'none';
+      if (tab === 'offertes') renderOfferteTab();
+    }
+    function ofLaad() {
+      try { return JSON.parse(localStorage.getItem('mijn_offertes') || '[]'); } catch(e) { return []; }
+    }
+    function ofSla(lijst) {
+      localStorage.setItem('mijn_offertes', JSON.stringify(lijst));
+    }
+    function renderOfferteTab() {
+      const el = document.getElementById('wm-offertes-inhoud');
+      const lijst = ofLaad();
+      if (lijst.length === 0) {
+        el.innerHTML = `<div class="wm-leeg"><div class="wm-leeg-icon">&#128203;</div><p>Nog geen offertes aangevraagd.</p></div>`;
+        return;
+      }
+      el.innerHTML = lijst.slice().reverse().map(o => {
+        const prods = o.producten.map(p => `${p.naam}${p.artikelcode ? ' ['+p.artikelcode+']' : ''} &times;${p.aantal}`).join('<br>');
+        return `<div class="of-hist-item">
+          <div class="of-hist-datum">${o.datum}</div>
+          <div class="of-hist-prod">${prods}</div>
+          <span class="of-hist-status verzonden">&#10003; Verzonden</span>
+        </div>`;
+      }).join('');
+    }
+    function openWinkelmandje() {
+      renderWinkelmandje();
+      wmTabWissel(_wmActieveTab);
+      document.getElementById('wm-overlay').classList.add('open');
+    }
+    function sluitWinkelmandje() {
+      document.getElementById('wm-overlay').classList.remove('open');
+    }
+    function renderWinkelmandje() {
+      const items = wmLaad();
+      const el = document.getElementById('wm-items');
+      const footer = document.getElementById('wm-footer');
+      if (items.length === 0) {
+        el.innerHTML = `<div class="wm-leeg"><div class="wm-leeg-icon">&#128722;</div><p>Uw mandje is leeg.</p></div>`;
+        footer.style.display = 'none';
+        return;
+      }
+      el.innerHTML = items.map(i => {
+        const prijsTxt = i.prijs != null
+          ? '&euro;&nbsp;' + parseFloat(i.prijs).toFixed(2).replace('.',',') + (i.eenheid ? ' / ' + escSiteHtml(i.eenheid) : '')
+          : 'Op aanvraag';
+        const imgHtml = i.afbeelding
+          ? `<img class="wm-item-img" src="/producten/${escSiteHtml(i.afbeelding)}" alt="${escSiteHtml(i.naam)}" />`
+          : `<div class="wm-item-img-placeholder">&#128194;</div>`;
+        return `<div class="wm-item">
+          ${imgHtml}
+          <div class="wm-item-body">
+            <div class="wm-item-naam">${escSiteHtml(i.naam)}</div>
+            ${i.artikelcode ? `<div class="wm-item-code">${escSiteHtml(i.artikelcode)}</div>` : ''}
+            <div class="wm-item-rij">
+              <span class="wm-item-prijs">${prijsTxt}</span>
+              <div class="wm-item-aantal">
+                <button onclick="wmAantalWijzig(${i.id}, -1)">&#8722;</button>
+                <span>${i.aantal}</span>
+                <button onclick="wmAantalWijzig(${i.id}, 1)">+</button>
+              </div>
+              <button class="wm-item-verwijder" onclick="wmVerwijder(${i.id})" title="Verwijder">&#10005;</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+      // Totaal (alleen producten met prijs)
+      const totaal = items.reduce((s, i) => i.prijs != null ? s + (parseFloat(i.prijs) * i.aantal) : s, 0);
+      const heeftPrijs = items.some(i => i.prijs != null);
+      document.getElementById('wm-totaal').innerHTML = heeftPrijs
+        ? '&euro;&nbsp;' + totaal.toFixed(2).replace('.',',')
+        : 'Op aanvraag';
+      footer.style.display = 'block';
+      // Pas bestelknop tekst aan op modus
+      const bestelBtn = document.getElementById('wm-bestel-btn');
+      if (bestelBtn) bestelBtn.innerHTML = siteOfferte ? 'Offerte aanvragen &#8594;' : 'Bestelling versturen &#8594;';
+    }
+    function bestellen() {
+      const items = wmLaad();
+      if (items.length === 0) return;
+      if (siteOfferte) {
+        offerteModalOpen(items);
+        return;
+      }
+      const regels = items.map(i =>
+        `• ${i.naam}${i.artikelcode ? ' [' + i.artikelcode + ']' : ''} × ${i.aantal}${i.prijs != null ? ' (€' + (parseFloat(i.prijs) * i.aantal).toFixed(2) + ')' : ''}`
+      );
+      const tekst = 'Beste,\n\nIk wil graag de volgende producten bestellen:\n\n' + regels.join('\n') + '\n\nMet vriendelijke groet';
+      const waBtn = document.getElementById('c-wa-btn');
+      let waHref = waBtn && waBtn.href && waBtn.href.includes('wa.me') ? waBtn.href.split('?')[0] : 'https://wa.me';
+      window.open(waHref + '?text=' + encodeURIComponent(tekst), '_blank');
+    }
+
+    let ingelogdeGebruiker = null;
+
+    function offerteModalOpen(items) {
+      const modal = document.getElementById('offerte-modal');
+      modal.style.display = 'flex';
+      // Pre-invullen als ingelogd als klant
+      document.getElementById('of-naam').value = ingelogdeGebruiker ? (ingelogdeGebruiker.naam || '') : '';
+      document.getElementById('of-email').value = ingelogdeGebruiker ? (ingelogdeGebruiker.email || '') : '';
+      document.getElementById('of-telefoon').value = '';
+      document.getElementById('of-bericht').value = '';
+      document.getElementById('of-fout').style.display = 'none';
+      document.getElementById('of-verstuur-btn').disabled = false;
+      document.getElementById('of-verstuur-btn').innerHTML = 'Offerte aanvragen &#8594;';
+      document.getElementById('of-producten-kop').textContent = items.length + ' product' + (items.length !== 1 ? 'en' : '') + ' geselecteerd';
+      // Focus op naam als leeg, anders op bericht
+      setTimeout(() => {
+        const el = !ingelogdeGebruiker ? document.getElementById('of-naam') : document.getElementById('of-bericht');
+        el.focus();
+      }, 60);
+    }
+
+    function offerteModalSluit() {
+      document.getElementById('offerte-modal').style.display = 'none';
+    }
+
+    async function offerteVerstuur() {
+      const naam = document.getElementById('of-naam').value.trim();
+      const email = document.getElementById('of-email').value.trim();
+      const telefoon = document.getElementById('of-telefoon').value.trim();
+      const bericht = document.getElementById('of-bericht').value.trim();
+      const fout = document.getElementById('of-fout');
+      if (!naam) { fout.textContent = 'Vul uw naam in.'; fout.style.display = 'block'; return; }
+      if (!email || !email.includes('@')) { fout.textContent = 'Vul een geldig e-mailadres in.'; fout.style.display = 'block'; return; }
+      fout.style.display = 'none';
+      const btn = document.getElementById('of-verstuur-btn');
+      btn.disabled = true;
+      btn.textContent = 'Verzenden…';
+      const items = wmLaad();
+      const producten = items.map(i => ({ naam: i.naam, artikelcode: i.artikelcode || '', aantal: i.aantal }));
+      const res = await fetch('/api/offerte', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ naam, email, telefoon, bericht, producten })
+      }).catch(() => null);
+      if (res && res.ok) {
+        offerteModalSluit();
+        const ofLijst = ofLaad();
+        ofLijst.push({
+          datum: new Date().toLocaleString('nl-NL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}),
+          producten: items.map(i => ({ naam: i.naam, artikelcode: i.artikelcode||'', aantal: i.aantal }))
+        });
+        ofSla(ofLijst);
+        wmSla([]);
+        renderWinkelmandje();
+        sluitWinkelmandje();
+        toonToast('&#10003; Offerte aanvraag verstuurd! We nemen snel contact op.');
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = 'Offerte aanvragen &#8594;';
+        fout.textContent = 'Er ging iets mis. Probeer het opnieuw.';
+        fout.style.display = 'block';
+      }
+    }
+
+    /* ─── WINKEL MODUS ─── */
+    let siteOfferte = false;
+
+    function pasModusToe() {
+      document.body.classList.toggle('modus-offerte', siteOfferte);
+      // Winkelmandje header knop
+      const wmBtn = document.querySelector('.wm-btn');
+      if (wmBtn) {
+        const badge = wmBtn.querySelector('.wm-badge');
+        wmBtn.innerHTML = (siteOfferte ? '&#128203; Offerte' : '&#128722; Mandje');
+        if (badge) wmBtn.appendChild(badge);
+      }
+      // Toevoegen-knop op productpagina bijwerken als die zichtbaar is
+      const toevoegenBtn = document.querySelector('.pd-toevoegen');
+      if (toevoegenBtn && !toevoegenBtn.classList.contains('succes')) {
+        toevoegenBtn.innerHTML = siteOfferte ? '&#128203; Toevoegen aan offerte' : '&#128722; Toevoegen aan mandje';
+      }
+    }
+
+    /* ─── PRODUCT DETAIL PAGINA ─── */
+    let huidigeAfbeeldingen = [];
+    let huidigeAfbIdx = 0;
+    let prodCache = {};
+    let prodAfbCache = {};
+    let pdHuidigeId = null;
+    let pdVorigeContext = null;
+    let pdLijst = []; // Geordende lijst van product-IDs in huidige context
+
+    function pdUpdateNavPijlen() {
+      const idx = pdLijst.indexOf(pdHuidigeId);
+      const heeftLijst = pdLijst.length > 1;
+      const heeftVorige = heeftLijst && idx > 0;
+      const heeftVolgende = heeftLijst && idx < pdLijst.length - 1;
+      const links = document.getElementById('pd-nav-links');
+      const rechts = document.getElementById('pd-nav-rechts');
+      links.classList.toggle('zichtbaar', heeftVorige);
+      rechts.classList.toggle('zichtbaar', heeftVolgende);
+      // Teller: "positie / totaal"
+      document.getElementById('pd-nav-teller-links').textContent = heeftVorige ? (idx) + '\u200a/\u200a' + pdLijst.length : '';
+      document.getElementById('pd-nav-teller-rechts').textContent = heeftVolgende ? (idx + 2) + '\u200a/\u200a' + pdLijst.length : '';
+    }
+
+    async function pdNavigeer(richting) {
+      const idx = pdLijst.indexOf(pdHuidigeId);
+      if (idx === -1) return;
+      const nieuwIdx = idx + richting;
+      if (nieuwIdx < 0 || nieuwIdx >= pdLijst.length) return;
+      pdHuidigeId = pdLijst[nieuwIdx];
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0 });
+      document.getElementById('pd-pagina-body').innerHTML = '<div class="laden" style="padding:80px;text-align:center">Laden…</div>';
+      await renderProductDetail(pdHuidigeId);
+      pdUpdateNavPijlen();
+    }
+
+    async function openProduct(id) {
+      // Sla huidige context op voor de terug-knop
+      const q = document.getElementById('site-zoek-input').value.trim();
+      const catHeaderVisible = document.getElementById('cat-header').style.display !== 'none';
+      if (q) {
+        pdVorigeContext = { type: 'zoek', q };
+      } else if (catHeaderVisible && document.getElementById('cat-header-naam').textContent === 'Alle producten') {
+        pdVorigeContext = { type: 'alle', pagina: _alleProductenPagina || 1 };
+      } else if (catHeaderVisible) {
+        pdVorigeContext = { type: 'categorie', id: actieveId, naam: document.getElementById('cat-header-naam').textContent };
+      } else {
+        pdVorigeContext = { type: 'home' };
+      }
+
+      // Bouw productlijst uit huidig zichtbare grid
+      pdLijst = Array.from(document.querySelectorAll('.zoek-product-kaart'))
+        .map(el => {
+          const m = el.getAttribute('onclick').match(/openProduct\((\d+)\)/);
+          return m ? parseInt(m[1]) : null;
+        })
+        .filter(Boolean);
+
+      pdHuidigeId = id;
+
+      // Verberg alle andere secties
+      document.getElementById('hero-sectie').style.display = 'none';
+      document.getElementById('usp-bar').style.display = 'none';
+      document.getElementById('slider-sectie').style.display = 'none';
+      document.getElementById('aanb-sectie').style.display = 'none';
+      document.getElementById('cat-header').style.display = 'none';
+      document.getElementById('assortiment').style.display = 'none';
+      document.getElementById('sectie-contact').style.display = 'none';
+      const sp = document.getElementById('sectie-product');
+      sp.style.display = 'flex';
+      sp.style.flexDirection = 'column';
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0 });
+
+      // Toon laadstatus
+      document.getElementById('pd-pagina-body').innerHTML = '<div class="laden" style="padding:80px;text-align:center">Laden\u2026</div>';
+
+      await renderProductDetail(id);
+      pdUpdateNavPijlen();
+    }
+
+    async function renderProductDetail(id) {
+      // Afbeeldingen ophalen
+      let afbeeldingen = [];
+      if (prodAfbCache[id]) {
+        afbeeldingen = prodAfbCache[id];
+      } else {
+        try {
+          const afbs = await fetch('/api/publiek/producten/' + id + '/afbeeldingen').then(r => r.json()).catch(() => null);
+          if (Array.isArray(afbs)) {
+            afbeeldingen = afbs.map(a => a.bestandsnaam);
+          }
+        } catch(e) {}
+        if (afbeeldingen.length === 0 && prodCache[id] && prodCache[id].afbeelding) {
+          afbeeldingen = [prodCache[id].afbeelding];
+        }
+        prodAfbCache[id] = afbeeldingen;
+      }
+
+      const p = prodCache[id];
+      document.getElementById('pd-banner-titel').textContent = p ? p.naam : 'Product';
+      document.getElementById('pd-banner-cat').textContent = p && p.groep_naam ? p.groep_naam : '';
+
+      huidigeAfbeeldingen = afbeeldingen;
+      huidigeAfbIdx = 0;
+
+      document.getElementById('pd-pagina-body').innerHTML = bouwProductDetailHtml(p, afbeeldingen);
+
+      // Crosssales async laden en renderen
+      fetch('/api/publiek/producten/' + id + '/crosssales')
+        .then(r => r.json())
+        .then(cs => {
+          if (!Array.isArray(cs) || cs.length === 0) return;
+          const container = document.getElementById('pd-crosssales');
+          if (!container) return;
+          cs.forEach(cp => { prodCache[cp.id] = cp; });
+          container.innerHTML = `
+            <div class="pd-cs-kop">Anderen kochten ook</div>
+            <div class="pd-cs-grid">
+              ${cs.map(cp => `
+                <div class="zoek-product-kaart" onclick="openProduct(${cp.id})" title="${escSiteHtml(cp.naam)}">
+                  <div class="zp-img-wrap">
+                    ${cp.afbeelding
+                      ? `<img src="/producten/${escSiteHtml(cp.afbeelding)}" alt="${escSiteHtml(cp.naam)}" loading="lazy" />`
+                      : '<span class="zp-img-placeholder">&#128194;</span>'}
+                  </div>
+                  <div class="zp-body">
+                    <div class="zp-naam">${escSiteHtml(cp.naam || '—')}</div>
+                    ${cp.artikelcode ? `<div class="zp-code">${escSiteHtml(cp.artikelcode)}</div>` : ''}
+                    ${cp.prijs != null
+                      ? `<div class="zp-prijs">&euro;&nbsp;${parseFloat(cp.prijs).toFixed(2).replace('.',',')}${cp.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(cp.eenheid)}</span>` : ''}</div>`
+                      : '<div class="zp-prijs zp-op-aanvraag">Op aanvraag</div>'}
+                  </div>
+                </div>`).join('')}
+            </div>`;
+          container.style.display = 'block';
+        })
+        .catch(() => {});
+    }
+
+    function bouwProductDetailHtml(p, afbeeldingen) {
+      if (!p) return '<div class="leeg"><p>Product niet gevonden.</p></div>';
+
+      // Gallery
+      const galleryHtml = afbeeldingen.length > 0
+        ? `<img id="pd-main-img" src="/producten/${escSiteHtml(afbeeldingen[0])}" alt="${escSiteHtml(p.naam)}" />`
+        : `<div class="pd-gallery-placeholder">&#128194;</div>`;
+      const pijlenHtml = afbeeldingen.length > 1
+        ? `<button class="pd-pijl links" onclick="gaAfb(huidigeAfbIdx-1)">&#8249;</button>
+           <button class="pd-pijl rechts" onclick="gaAfb(huidigeAfbIdx+1)">&#8250;</button>
+           <div class="pd-gallery-dots" id="pd-dots">
+             ${afbeeldingen.map((_, i) => `<button class="pd-dot${i===0?' actief':''}" onclick="gaAfb(${i})"></button>`).join('')}
+           </div>` : '';
+      const thumbsHtml = afbeeldingen.length > 1
+        ? `<div class="pd-thumbs" id="pd-thumbs">
+            ${afbeeldingen.map((a, i) => `<img class="pd-thumb${i===0?' actief':''}" src="/producten/${escSiteHtml(a)}" onclick="gaAfb(${i})" />`).join('')}
+           </div>` : '';
+
+      // Prijs
+      const prijsHtml = p.prijs != null
+        ? `<div class="pd-prijs-rij">
+            <span class="pd-prijs">&euro;&nbsp;${parseFloat(p.prijs).toFixed(2).replace('.',',')}</span>
+            ${p.eenheid ? `<span class="pd-eenheid">/ ${escSiteHtml(p.eenheid)}</span>` : ''}
+           </div>
+           <div class="pd-btw-info">Prijzen excl. btw</div>`
+        : `<div class="pd-op-aanvraag">&#128222; Prijs op aanvraag &mdash; neem contact op</div>`;
+
+      // USPs
+      const uspHtml = `<div class="pd-usps">
+        <span class="pd-usp-item">&#10003; Grote voorraad</span>
+        <span class="pd-usp-item">&#128666; Snelle levering</span>
+        <span class="pd-usp-item">&#128172; Vakkundig advies</span>
+      </div>`;
+
+      // Specs
+      const specs = [];
+      if (p.artikelcode) specs.push(['Artikelcode', p.artikelcode]);
+      if (p.gewicht) specs.push(['Gewicht', p.gewicht + ' kg']);
+      if (p.eenheid) specs.push(['Eenheid', p.eenheid]);
+      if (p.groep_naam) specs.push(['Categorie', p.groep_naam]);
+      const specsHtml = specs.length > 0
+        ? `<hr class="pd-scheidingslijn" />
+           <div class="pd-specs">
+            ${specs.map(([l, v]) => `<div class="pd-specs-rij"><div class="pd-specs-label">${escSiteHtml(l)}</div><div class="pd-specs-val">${escSiteHtml(String(v))}</div></div>`).join('')}
+           </div>` : '';
+
+      // Beschrijving (full width onder de grid)
+      const beschrHtml = p.beschrijving
+        ? `<div class="pd-beschr-card">
+            <div class="pd-beschr-kop">Productomschrijving</div>
+            <div class="pd-beschrijving">${escSiteHtml(p.beschrijving)}</div>
+           </div>` : '';
+
+      return `
+        <div class="pd-main-grid">
+          <div>
+            <div class="pd-gallery" id="pd-gallery">
+              ${galleryHtml}
+              ${pijlenHtml}
+            </div>
+            ${thumbsHtml}
+          </div>
+          <div>
+            <div class="pd-naam">${escSiteHtml(p.naam)}</div>
+            ${p.artikelcode ? `<div class="pd-code">${escSiteHtml(p.artikelcode)}</div>` : ''}
+            <hr class="pd-scheidingslijn" />
+            ${prijsHtml}
+            <div class="pd-bestel-rij">
+              <div class="pd-aantal">
+                <button onclick="pdAantalWijzig(-1)">&#8722;</button>
+                <input type="number" id="pd-aantal" value="1" min="1" max="9999" />
+                <button onclick="pdAantalWijzig(1)">+</button>
+              </div>
+              <button class="pd-toevoegen" onclick="pdToevoegen(${p.id})">
+                ${siteOfferte ? '&#128203; Toevoegen aan offerte' : '&#128722; Toevoegen aan mandje'}
+              </button>
+            </div>
+            ${uspHtml}
+            ${specsHtml}
+          </div>
+        </div>
+        ${beschrHtml}
+        <div id="pd-crosssales" style="display:none"></div>`;
+    }
+
+    function gaAfb(idx) {
+      if (huidigeAfbeeldingen.length === 0) return;
+      huidigeAfbIdx = ((idx % huidigeAfbeeldingen.length) + huidigeAfbeeldingen.length) % huidigeAfbeeldingen.length;
+      updateGallery();
+    }
+    function updateGallery() {
+      const img = document.getElementById('pd-main-img');
+      if (img && huidigeAfbeeldingen[huidigeAfbIdx]) {
+        img.src = '/producten/' + escSiteHtml(huidigeAfbeeldingen[huidigeAfbIdx]);
+      }
+      document.querySelectorAll('.pd-dot').forEach((d, i) => d.classList.toggle('actief', i === huidigeAfbIdx));
+      document.querySelectorAll('.pd-thumb').forEach((t, i) => t.classList.toggle('actief', i === huidigeAfbIdx));
+    }
+    function pdAantalWijzig(delta) {
+      const inp = document.getElementById('pd-aantal');
+      if (!inp) return;
+      inp.value = Math.max(1, parseInt(inp.value || 1) + delta);
+    }
+    function pdToevoegen(id) {
+      const p = prodCache[id];
+      if (!p) return;
+      const aantal = Math.max(1, parseInt(document.getElementById('pd-aantal')?.value || 1));
+      wmToevoegen(p, aantal);
+      const btn = document.querySelector('.pd-toevoegen');
+      if (btn) {
+        btn.classList.add('succes');
+        btn.textContent = '✓ Toegevoegd!';
+        setTimeout(() => {
+          btn.classList.remove('succes');
+          btn.innerHTML = siteOfferte ? '&#128203; Toevoegen aan offerte' : '&#128722; Toevoegen aan mandje';
+        }, 1500);
+      }
+    }
+    function sluitProductPagina() {
+      document.getElementById('sectie-product').style.display = 'none';
+      document.getElementById('pd-nav-links').classList.remove('zichtbaar');
+      document.getElementById('pd-nav-rechts').classList.remove('zichtbaar');
+      pdLijst = [];
+      if (!pdVorigeContext || pdVorigeContext.type === 'home') {
+        naarHome();
+      } else if (pdVorigeContext.type === 'alle') {
+        toonAlleProducten(pdVorigeContext.pagina);
+      } else if (pdVorigeContext.type === 'zoek') {
+        document.getElementById('site-zoek-input').value = pdVorigeContext.q;
+        siteZoek();
+      } else if (pdVorigeContext.type === 'categorie') {
+        toonCatHeader(pdVorigeContext.naam);
+        toonProducten(pdVorigeContext.id, pdVorigeContext.naam);
+      } else {
+        naarHome();
+      }
+    }
+    // Keyboard ESC sluit overlay's, pijltjes navigeren producten
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (document.getElementById('offerte-modal').style.display !== 'none') { offerteModalSluit(); return; }
+        if (document.getElementById('sectie-product').style.display !== 'none') sluitProductPagina();
+        sluitWinkelmandje();
+      }
+      if (document.getElementById('sectie-product').style.display !== 'none') {
+        if (e.key === 'ArrowLeft') pdNavigeer(-1);
+        if (e.key === 'ArrowRight') pdNavigeer(1);
+      }
+    });
+    // Klik op backdrop sluit modal
+    document.getElementById('offerte-modal').addEventListener('click', e => {
+      if (e.target === document.getElementById('offerte-modal')) offerteModalSluit();
+    });
+
+    async function laadInstellingen() {
+      try {
+        const s = await fetch('/api/instellingen').then(r => r.json());
+
+        // Winkel modus
+        siteOfferte = (s.winkel_modus || 'bestellen') === 'offerte';
+        pasModusToe();
+
+        // Notificatiebalk: aangepaste tijden komende 30 dagen
+        try {
+          const aangepast = JSON.parse(s.aangepaste_tijden || '[]');
+          const vandaag = new Date(); vandaag.setHours(0,0,0,0);
+          const grens = new Date(vandaag); grens.setDate(grens.getDate() + 30);
+          const komend = aangepast.filter(r => {
+            if (!r.dag) return false;
+            const d = new Date(r.dag + 'T00:00:00');
+            return d >= vandaag && d <= grens;
+          }).sort((a,b) => new Date(a.dag) - new Date(b.dag));
+
+          const balk = document.getElementById('notificatie-balk');
+          if (komend.length) {
+            const regels = komend.map(r => {
+              const d = new Date(r.dag + 'T00:00:00');
+              const dagNaam = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+              const gesloten = r.tijd === 'Gesloten';
+              return gesloten
+                ? `&#128274; Wij zijn <strong>${dagNaam}</strong> gesloten`
+                : `&#128336; Op <strong>${dagNaam}</strong> geopend: ${r.tijd}`;
+            });
+            balk.innerHTML = regels.join(' &nbsp;&bull;&nbsp; ') +
+              ` <a onclick="this.closest('#notificatie-balk').style.display='none'">&#10005;</a>`;
+            balk.style.display = 'block';
+          } else {
+            balk.style.display = 'none';
+          }
+        } catch(e) {}
+
+        const adres = [s.adres_straat, (s.adres_postcode + ' ' + s.adres_stad).trim()].filter(Boolean).join('<br>');
+        document.getElementById('c-adres').innerHTML = adres || '&mdash;';
+        const telEl = document.getElementById('c-telefoon');
+        if (s.telefoon) { telEl.textContent = s.telefoon; telEl.href = 'tel:' + s.telefoon.replace(/\s/g,''); }
+        const mailEl = document.getElementById('c-email');
+        if (s.email) { mailEl.textContent = s.email; mailEl.href = 'mailto:' + s.email; }
+        document.getElementById('c-kvk').textContent = s.kvk || '';
+        const wa = s.whatsapp ? s.whatsapp.replace(/\D/g, '') : '';
+        const waBtn = document.getElementById('c-wa-btn');
+        if (wa) {
+          waBtn.href = 'https://wa.me/' + wa;
+        } else {
+          waBtn.style.display = 'none';
+        }
+        if (s.bedrijf_naam) {
+          const cBedrijf = document.getElementById('c-bedrijf');
+          if (cBedrijf) cBedrijf.textContent = s.bedrijf_naam;
+          document.getElementById('footer-bedrijf').textContent = s.bedrijf_naam;
+        }
+
+        // Openingstijden (moet vóór footer-tijden staan)
+        let tijden = [];
+        try { tijden = JSON.parse(s.openingstijden || '[]'); } catch(e) {}
+        const otEl = document.getElementById('c-openingstijden');
+        otEl.innerHTML = tijden.map(r =>
+          `<div class="openings-rij"><span>${r.dag}</span><span>${r.tijd}</span></div>`
+        ).join('');
+
+        // Footer openingstijden
+        const ftEl = document.getElementById('footer-tijden');
+        if (tijden.length) {
+          ftEl.innerHTML = tijden.map(r =>
+            `<div class="footer-tijd-item"><span>${r.dag}</span><span>${r.tijd}</span></div>`
+          ).join('');
+        } else {
+          ftEl.innerHTML = '';
+        }
+        if (s.maps_url) document.getElementById('c-map').src = s.maps_url;
+
+        // Aangepaste tijden
+        let aangepast = [];
+        try { aangepast = JSON.parse(s.aangepaste_tijden || '[]'); } catch(e) {}
+        const atEl = document.getElementById('c-aangepast');
+        const atWrap = document.getElementById('c-aangepast-wrap');
+        if (aangepast.length) {
+          atEl.innerHTML = aangepast.map(r => {
+            let dagLabel = r.dag;
+            try {
+              const d = new Date(r.dag + 'T00:00:00');
+              if (!isNaN(d)) dagLabel = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+            } catch(e) {}
+            const gesloten = r.tijd === 'Gesloten';
+            return `<div class="openings-rij">
+              <span>${dagLabel}</span>
+              <span style="${gesloten?'color:#e07b2a;font-weight:600':''}">
+                ${gesloten ? '&#128274; Gesloten' : r.tijd}
+              </span>
+            </div>`;
+          }).join('');
+          atWrap.style.display = 'block';
+        } else {
+          atWrap.style.display = 'none';
+        }
+      } catch(e) { console.warn('Instellingen laden mislukt', e); }
+    }
+
+    /* ── SITE ZOEKEN ── */
+    let siteZoekTimer = null;
+    function siteZoekDebounce() {
+      clearTimeout(siteZoekTimer);
+      const q = document.getElementById('site-zoek-input').value.trim();
+      if (q.length >= 2) siteZoekTimer = setTimeout(siteZoek, 350);
+    }
+
+    async function siteZoek() {
+      const q = document.getElementById('site-zoek-input').value.trim();
+      if (!q) return;
+
+      // Verberg hero / contact / etc, toon assortiment-sectie
+      document.getElementById('hero-sectie').style.display = 'none';
+      document.getElementById('usp-bar').style.display = 'none';
+      document.getElementById('slider-sectie').style.display = 'none';
+      document.getElementById('aanb-sectie').style.display = 'none';
+      document.getElementById('cat-header').style.display = 'none';
+      document.getElementById('sectie-contact').style.display = 'none';
+      document.getElementById('sectie-product').style.display = 'none';
+      document.getElementById('assortiment').style.display = 'block';
+      document.getElementById('pd-nav-links').classList.remove('zichtbaar');
+      document.getElementById('pd-nav-rechts').classList.remove('zichtbaar');
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0, behavior: 'smooth' });
+
+      const inhoud = document.getElementById('inhoud');
+      inhoud.innerHTML = '<div class="laden">Zoeken\u2026</div>';
+
+      const bfZoek = bkGetBezorgFilter();
+      const bfParam = bfZoek ? '&bezorging=' + encodeURIComponent(bfZoek) : '';
+      const data = await fetch('/api/producten?q=' + encodeURIComponent(q) + '&per_pagina=100' + bfParam).then(r => r.json()).catch(() => ({ totaal: 0, items: [] }));
+
+      if (data.totaal === 0) {
+        inhoud.innerHTML = `
+          <div class="zoek-resultaten-header">
+            <button class="zoek-terug-btn" onclick="siteZoekLeeg()">&#8592; Terug</button>
+            <h3>Geen resultaten voor &ldquo;${escSiteHtml(q)}&rdquo;</h3>
+          </div>
+          <div class="leeg"><div class="emoji">&#128270;</div><p>Probeer andere zoektermen of blader via de categorie&euml;n.</p></div>`;
+        return;
+      }
+
+      inhoud.innerHTML = `
+        <div class="zoek-resultaten-header">
+          <button class="zoek-terug-btn" onclick="siteZoekLeeg()">&#8592; Terug</button>
+          <h3>${data.totaal} resultaat${data.totaal !== 1 ? 'en' : ''} voor &ldquo;${escSiteHtml(q)}&rdquo;</h3>
+        </div>
+        <div class="zoek-product-grid">
+          ${data.items.map(p => {
+            prodCache[p.id] = p;
+            return `
+            <div class="zoek-product-kaart" onclick="openProduct(${p.id})" title="${escSiteHtml(p.naam)}">
+              <div class="zp-img-wrap">
+                ${p.afbeelding
+                  ? `<img src="/producten/${escSiteHtml(p.afbeelding)}" alt="${escSiteHtml(p.naam)}" loading="lazy" />`
+                  : '<span class="zp-img-placeholder">&#128194;</span>'}
+              </div>
+              <div class="zp-body">
+                <div class="zp-naam">${escSiteHtml(p.naam || '—')}</div>
+                ${p.artikelcode ? `<div class="zp-code">${escSiteHtml(p.artikelcode)}</div>` : ''}
+                ${p.prijs != null ? `<div class="zp-prijs">&euro;&nbsp;${parseFloat(p.prijs).toFixed(2).replace('.',',')}${p.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(p.eenheid)}</span>` : ''}</div>` : ''}
+                ${p.groep_naam ? `<div><span class="zp-groep">${escSiteHtml(p.groep_naam)}</span></div>` : ''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    function siteZoekLeeg() {
+      document.getElementById('site-zoek-input').value = '';
+      naarHome();
+    }
+
+    function escSiteHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function naarHome() {
+      actieveId = null;
+      openSet.clear();
+      stapel.splice(1);
+      document.getElementById('inhoud').innerHTML = '';
+      toonHero();
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0, behavior: 'smooth' });
+      renderSidebar();
+    }
+
+    function toonContact() {
+      document.getElementById('hero-sectie').style.display = 'none';
+      document.getElementById('usp-bar').style.display = 'none';
+      document.getElementById('slider-sectie').style.display = 'none';
+      document.getElementById('aanb-sectie').style.display = 'none';
+      document.getElementById('cat-header').style.display = 'none';
+      document.getElementById('assortiment').style.display = 'none';
+      document.getElementById('sectie-contact').style.display = 'flex';
+      document.getElementById('sectie-product').style.display = 'none';
+      document.getElementById('pd-nav-links').classList.remove('zichtbaar');
+      document.getElementById('pd-nav-rechts').classList.remove('zichtbaar');
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toonCatHeader(naam) {
+      document.getElementById('hero-sectie').style.display = 'none';
+      document.getElementById('usp-bar').style.display = 'none';
+      document.getElementById('slider-sectie').style.display = 'none';
+      document.getElementById('aanb-sectie').style.display = 'none';
+      document.getElementById('cat-header-naam').textContent = naam;
+      document.getElementById('cat-header').style.display = 'block';
+      document.getElementById('assortiment').style.display = '';
+      document.getElementById('sectie-contact').style.display = 'none';
+      document.getElementById('sectie-product').style.display = 'none';
+      document.getElementById('pd-nav-links').classList.remove('zichtbaar');
+      document.getElementById('pd-nav-rechts').classList.remove('zichtbaar');
+    }
+
+    function toonHero() {
+      document.getElementById('hero-sectie').style.display = '';
+      document.getElementById('usp-bar').style.display = '';
+      document.getElementById('slider-sectie').style.display = '';
+      document.getElementById('aanb-sectie').style.display = _aanbTonen ? '' : 'none';
+      document.getElementById('cat-header').style.display = 'none';
+      document.getElementById('assortiment').style.display = '';
+      document.getElementById('sectie-contact').style.display = 'none';
+      document.getElementById('sectie-product').style.display = 'none';
+      document.getElementById('pd-nav-links').classList.remove('zichtbaar');
+      document.getElementById('pd-nav-rechts').classList.remove('zichtbaar');
+    }
+
+    function renderBreadcrumb() {}
+    function naarRoot() {}
+    async function naarStap(index) {}
+
+    async function toonAlleProducten(pagina) {
+      pagina = pagina || 1;
+      _alleProductenPagina = pagina;
+      _huidigGroepId = null;
+      _huidigGroepNaam = null;
+      const perPagina = 100;
+      toonCatHeader('Alle producten');
+      document.getElementById('assortiment').style.display = '';
+      document.querySelector('.pagina-hoofd').scrollTo({ top: 0, behavior: 'smooth' });
+      const inhoud = document.getElementById('inhoud');
+      inhoud.innerHTML = '<div class="laden">Producten laden…</div>';
+      try {
+        const bf = bkGetBezorgFilter();
+        const bfParam = bf ? '&bezorging=' + encodeURIComponent(bf) : '';
+        const data = await fetch(`/api/producten?per_pagina=${perPagina}&pagina=${pagina}${bfParam}`).then(r => r.json());
+        data.items.forEach(p => { prodCache[p.id] = p; });
+        const totaalPaginas = Math.ceil(data.totaal / perPagina);
+        const paginaNav = totaalPaginas > 1 ? `
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:24px 0 8px;flex-wrap:wrap">
+            ${pagina > 1 ? `<button onclick="toonAlleProducten(${pagina-1})" style="padding:7px 18px;border:1.5px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:.88rem;font-family:inherit">&#8592; Vorige</button>` : ''}
+            <span style="font-size:.85rem;color:#aaa">Pagina ${pagina} van ${totaalPaginas}</span>
+            ${pagina < totaalPaginas ? `<button onclick="toonAlleProducten(${pagina+1})" style="padding:7px 18px;border:1.5px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;font-size:.88rem;font-family:inherit">Volgende &#8594;</button>` : ''}
+          </div>` : '';
+        if (!data.items || data.items.length === 0) {
+          inhoud.innerHTML = '<div class="leeg"><p>Geen producten gevonden.</p></div>';
+          return;
+        }
+        inhoud.innerHTML = `
+          <div class="cat-producten-header">
+            <span class="cat-producten-aantal">${data.totaal} product${data.totaal !== 1 ? 'en' : ''}</span>
+          </div>
+          <div class="zoek-product-grid">
+            ${data.items.map(p => `
+              <div class="zoek-product-kaart" onclick="openProduct(${p.id})" title="${escSiteHtml(p.naam)}">
+                <div class="zp-img-wrap">
+                  ${p.afbeelding
+                    ? `<img src="/producten/${escSiteHtml(p.afbeelding)}" alt="${escSiteHtml(p.naam)}" loading="lazy" />`
+                    : '<span class="zp-img-placeholder">&#128194;</span>'}
+                </div>
+                <div class="zp-body">
+                  <div class="zp-naam">${escSiteHtml(p.naam || '—')}</div>
+                  ${p.artikelcode ? `<div class="zp-code">${escSiteHtml(p.artikelcode)}</div>` : ''}
+                  ${p.beschrijving ? `<div class="zp-beschrijving">${escSiteHtml(p.beschrijving)}</div>` : ''}
+                  ${p.prijs != null ? `<div class="zp-prijs">&euro;&nbsp;${parseFloat(p.prijs).toFixed(2).replace('.',',')}${p.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(p.eenheid)}</span>` : ''}</div>` : '<div class="zp-prijs zp-op-aanvraag">Op aanvraag</div>'}
+                </div>
+              </div>`).join('')}
+          </div>
+          ${paginaNav}`;
+      } catch(e) {
+        inhoud.innerHTML = '<div class="leeg"><p>Laden mislukt, probeer opnieuw.</p></div>';
+      }
+    }
+
+    async function toonProducten(groepId, naam) {
+      _huidigGroepId = groepId;
+      _huidigGroepNaam = naam;
+      const inhoud = document.getElementById('inhoud');
+      inhoud.innerHTML = '<div class="laden">Producten laden…</div>';
+      try {
+        const bf = bkGetBezorgFilter();
+        const bfParam = bf ? '&bezorging=' + encodeURIComponent(bf) : '';
+        const data = await fetch(`/api/producten?groep_id=${groepId}&per_pagina=200${bfParam}`).then(r => r.json());
+        if (!data.items || data.items.length === 0) {
+          inhoud.innerHTML = `<div class="leeg"><div class="emoji">&#128230;</div>
+            <p>Nog geen producten in <strong>${escSiteHtml(naam)}</strong>.</p></div>`;
+          return;
+        }
+        inhoud.innerHTML = `
+          <div class="cat-producten-header">
+            <span class="cat-producten-aantal">${data.totaal} product${data.totaal !== 1 ? 'en' : ''}</span>
+          </div>
+          <div class="zoek-product-grid">
+            ${data.items.map(p => {
+              prodCache[p.id] = p;
+              return `
+              <div class="zoek-product-kaart" onclick="openProduct(${p.id})" title="${escSiteHtml(p.naam)}">
+                <div class="zp-img-wrap">
+                  ${p.afbeelding
+                    ? `<img src="/producten/${escSiteHtml(p.afbeelding)}" alt="${escSiteHtml(p.naam)}" loading="lazy" />`
+                    : '<span class="zp-img-placeholder">&#128194;</span>'}
+                </div>
+                <div class="zp-body">
+                  <div class="zp-naam">${escSiteHtml(p.naam || '—')}</div>
+                  ${p.artikelcode ? `<div class="zp-code">${escSiteHtml(p.artikelcode)}</div>` : ''}
+                  ${p.beschrijving ? `<div class="zp-beschrijving">${escSiteHtml(p.beschrijving)}</div>` : ''}
+                  ${p.prijs != null ? `<div class="zp-prijs">&euro;&nbsp;${parseFloat(p.prijs).toFixed(2).replace('.',',')}${p.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(p.eenheid)}</span>` : ''}</div>` : '<div class="zp-prijs zp-op-aanvraag">Op aanvraag</div>'}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>`;
+      } catch(e) {
+        inhoud.innerHTML = `<div class="leeg"><p>Laden mislukt, probeer opnieuw.</p></div>`;
+      }
+    }
+
+    async function toonTegels(parentId, parentNaam) {
+      const inhoud = document.getElementById('inhoud');
+      inhoud.innerHTML = '<div class="laden">Laden\u2026</div>';
+      const kinderen = await haal(parentId);
+      if (kinderen.length === 0) {
+        inhoud.innerHTML = `<div class="leeg"><div class="emoji">&#128230;</div>
+          <p>Producten voor <strong>${parentNaam}</strong> volgen.</p></div>`;
+        return;
+      }
+      inhoud.innerHTML = `<div class="tegel-grid">${kinderen.map(g => `
+        <div class="tegel" onclick="tegelKlik(${g.id},'${esc(g.naam)}',${g.heeft_kinderen})">
+          <img class="tegel-img" src="/api/groepen/${g.id}/afbeelding" alt="${g.naam}"
+            onerror="this.outerHTML='<div class=\\'tegel-icon\\'>&#128194;</div>'" />
+          <span class="tegel-naam">${g.naam}</span>
+          ${g.heeft_kinderen ? '<span class="tegel-pijl">Subcategorie\u00EBn \u203A</span>' : ''}
+        </div>`).join('')}</div>`;
+    }
+
+    async function tegelKlik(id, naam, heeftKinderen) {
+      actieveId = id;
+      if (!stapel.find(s => s.id === id)) stapel.push({ id, naam });
+      openSet.add(id);
+      toonCatHeader(naam);
+      if (heeftKinderen) {
+        await toonTegels(id, naam);
+      } else {
+        await toonProducten(id, naam);
+      }
+      await renderSidebar();
+    }
+
+    async function renderSidebar() {
+      const lijst = document.getElementById('cat-lijst');
+      const root = await haal(null);
+      if (root.length === 0) {
+        lijst.innerHTML = '<div class="laden" style="color:#ccc">Geen categorie\u00EBn</div>';
+        return;
+      }
+      let html = '';
+      for (const g1 of root) {
+        html += itemHtml(g1, 1);
+        if (openSet.has(g1.id)) {
+          const k2 = await haal(g1.id);
+          html += `<div class="cat-sub" id="sub-${g1.id}">`;
+          for (const g2 of k2) {
+            html += itemHtml(g2, 2);
+            if (openSet.has(g2.id)) {
+              const k3 = await haal(g2.id);
+              html += `<div class="cat-sub" id="sub-${g2.id}">`;
+              for (const g3 of k3) html += itemHtml(g3, 3);
+              html += '</div>';
+            }
+          }
+          html += '</div>';
+        }
+      }
+      lijst.innerHTML = html;
+      document.querySelectorAll('.cat-item').forEach(el => {
+        const id = parseInt(el.dataset.id);
+        if (id === actieveId) el.classList.add('actief');
+        if (openSet.has(id)) el.classList.add('open');
+      });
+    }
+
+    async function klik(id, naam, heeftKinderen, niveau) {
+      actieveId = id;
+      if (openSet.has(id)) {
+        openSet.delete(id);
+        const idx = stapel.findIndex(s => s.id === id);
+        if (idx > 0) { stapel.splice(idx); }
+        const parent = stapel[stapel.length - 1];
+        if (parent.id === null) {
+          toonHero();
+          document.getElementById('inhoud').innerHTML = '';
+        } else {
+          toonCatHeader(parent.naam);
+          await toonTegels(parent.id, parent.naam);
+        }
+      } else {
+        openSet.add(id);
+        if (!stapel.find(s => s.id === id)) stapel.push({ id, naam });
+        toonCatHeader(naam);
+        if (heeftKinderen) {
+          await toonTegels(id, naam);
+        } else {
+          await toonProducten(id, naam);
+        }
+      }
+      await renderSidebar();
+    }
+
+    async function laadSlider() {
+      try {
+        const slides = await fetch('/api/slider').then(r => r.json());
+        const track = document.getElementById('slider-track');
+        if (!slides.length) {
+          document.getElementById('slider-sectie').style.display = 'none';
+          return;
+        }
+        // Dupliceer voor naadloze loop
+        const alle = [...slides, ...slides];
+        track.innerHTML = alle.map((s, i) =>
+          `<div class="slider-slide"><img ${i < 4 ? '' : 'loading="lazy" '}src="/slider/${s.bestandsnaam}" alt="${s.titel || 'werkzaamheid'}"></div>`
+        ).join('');
+        // Pas animatieduur aan op aantal dia's
+        const duur = slides.length * 5;
+        track.style.animationDuration = duur + 's';
+      } catch(e) {
+        document.getElementById('slider-sectie').style.display = 'none';
+      }
+    }
+
+    async function laadAanbiedingen() {
+      try {
+        const nu = new Date();
+        const jaar = nu.getFullYear();
+        const maand = nu.getMonth() + 1;
+        const bf = bkGetBezorgFilter();
+        const bfParam = bf ? '&bezorging=' + encodeURIComponent(bf) : '';
+        const items = await fetch(`/api/aanbiedingen?jaar=${jaar}&maand=${maand}${bfParam}`).then(r => r.json()).catch(() => []);
+        if (!items.length) { _aanbTonen = false; return; }
+        const maandNamen = ['Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
+        document.getElementById('aanb-maand-label').textContent = maandNamen[maand - 1] + ' ' + jaar;
+        // prodCache vullen zodat openProduct werkt
+        items.forEach(a => {
+          if (!prodCache[a.product_id]) {
+            prodCache[a.product_id] = {
+              id: a.product_id,
+              naam: a.naam,
+              artikelcode: a.artikelcode,
+              prijs: a.originele_prijs,
+              eenheid: a.eenheid,
+              afbeelding: a.afbeelding,
+            };
+          }
+        });
+        document.getElementById('aanb-grid').innerHTML = items.map(a => {
+          // Bereken actieprijs
+          let actiePrijs = null;
+          if (a.korting_prijs != null) actiePrijs = parseFloat(a.korting_prijs);
+          else if (a.korting_procent != null && a.originele_prijs != null) actiePrijs = parseFloat(a.originele_prijs) * (1 - a.korting_procent / 100);
+          const oudHtml = (a.originele_prijs != null && actiePrijs != null)
+            ? `<span class="aanb-prijs-oud">&euro;&nbsp;${parseFloat(a.originele_prijs).toFixed(2).replace('.',',')}</span>`
+            : '';
+          const prijsHtml = actiePrijs != null
+            ? `${oudHtml}<span class="zp-prijs">&euro;&nbsp;${actiePrijs.toFixed(2).replace('.',',')}${a.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(a.eenheid)}</span>` : ''}</span>`
+            : (a.originele_prijs != null ? `<span class="zp-prijs">&euro;&nbsp;${parseFloat(a.originele_prijs).toFixed(2).replace('.',',')}${a.eenheid ? `<span class="zp-eenheid">/ ${escSiteHtml(a.eenheid)}</span>` : ''}</span>` : '');
+          const badgeHtml = a.korting_procent != null
+            ? `<span class="aanb-korting-badge">-${parseFloat(a.korting_procent).toFixed(0)}%</span>`
+            : (a.korting_prijs != null && a.originele_prijs != null ? `<span class="aanb-korting-badge">Aanbieding</span>` : '');
+          return `<div class="zoek-product-kaart" onclick="openProduct(${a.product_id})" title="${escSiteHtml(a.naam)}">
+            <div class="zp-img-wrap">
+              ${a.afbeelding
+                ? `<img src="/producten/${escSiteHtml(a.afbeelding)}" alt="${escSiteHtml(a.naam)}" loading="lazy" />`
+                : '<span class="zp-img-placeholder">&#128194;</span>'}
+            </div>
+            <div class="zp-body">
+              <div class="zp-naam">${escSiteHtml(a.naam)}</div>
+              ${a.artikelcode ? `<div class="zp-code">${escSiteHtml(a.artikelcode)}</div>` : ''}
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:8px">
+                ${prijsHtml}${badgeHtml}
+              </div>
+            </div>
+          </div>`;
+        }).join('');
+        document.getElementById('aanb-sectie').style.display = '';
+        _aanbTonen = true;
+      } catch(e) {
+        _aanbTonen = false;
+      }
+    }
+
+    // ─── BEZORGKEUZE ───
+    let bkKeuze = null; // 'afhaal' | 'bezorgen'
+    let bkPostcode = null;
+
+    function bkTonen(ingelogd) {
+      const stapPc = document.getElementById('bk-stap-postcode');
+      const stapKeuze = document.getElementById('bk-stap-keuze');
+      if (ingelogd) {
+        // Sla postcodestap over
+        stapPc.style.display = 'none';
+        stapKeuze.style.display = 'block';
+      } else {
+        stapPc.style.display = 'block';
+        stapKeuze.style.display = 'none';
+      }
+      document.getElementById('bk-overlay').style.display = 'flex';
+    }
+
+    async function bkNaarKeuze() {
+      const val = document.getElementById('bk-pc-input').value.trim().toUpperCase().replace(/\s/g,'');
+      const fout = document.getElementById('bk-pc-fout');
+      if (!val || !/^\d{4}([A-Z]{2})?$/.test(val)) {
+        fout.textContent = 'Vul een geldige postcode in (bijv. 9711 of 9711AB).';
+        document.getElementById('bk-pc-input').focus();
+        return;
+      }
+      fout.textContent = '';
+      bkPostcode = val;
+      document.getElementById('bk-stap-postcode').style.display = 'none';
+      document.getElementById('bk-stap-keuze').style.display = 'block';
+      await bkCheckBezorging(val);
+    }
+
+    async function bkCheckBezorging(postcode) {
+      const el = document.getElementById('bk-check-status');
+      const optBezorgen = document.getElementById('bk-opt-bezorgen');
+      el.className = 'bk-status';
+      el.style.display = 'block';
+      el.textContent = '⏳ Bezorgmogelijkheden controleren…';
+      try {
+        const r = await fetch('/api/bezorgcheck?postcode=' + encodeURIComponent(postcode));
+        const data = await r.json();
+        sessionStorage.setItem('bk_bezorgstatus', data.status); // opslaan voor productfilter
+        if (data.status === 'beschikbaar') {
+          el.className = 'bk-status beschikbaar';
+          el.textContent = '✅ Goed nieuws! Wij bezorgen in uw postcodegebied (' + postcode + ').';
+          optBezorgen.classList.remove('bk-opt-uitgeschakeld');
+        } else if (data.status === 'geblokkeerd') {
+          el.className = 'bk-status geblokkeerd';
+          el.textContent = '❌ Helaas bezorgen wij niet in uw postcodegebied (' + postcode + '). U kunt uw bestelling wel afhalen.';
+          optBezorgen.classList.add('bk-opt-uitgeschakeld');
+          bkSelecteer('afhaal');
+        } else if (data.status === 'geen_bezorging') {
+          el.className = 'bk-status onbekend';
+          el.textContent = '📦 Wij rijden niet in uw postcodegebied (' + postcode + '), maar producten die per post (DHL) verstuurd worden zijn wel beschikbaar.';
+          optBezorgen.classList.remove('bk-opt-uitgeschakeld');
+        } else {
+          // onbekend: geocoding mislukt, geef klant het voordeel van de twijfel
+          el.className = 'bk-status onbekend';
+          el.textContent = '📞 Neem contact op om te controleren of wij bezorgen in uw postcodegebied.';
+          optBezorgen.classList.remove('bk-opt-uitgeschakeld');
+        }
+      } catch(e) {
+        el.style.display = 'none';
+        optBezorgen.classList.remove('bk-opt-uitgeschakeld');
+      }
+    }
+
+    // Geeft de bezorging-querystring terug op basis van klant keuze
+    // null = geen keuze gemaakt; anders altijd een filterwaarde
+    function bkGetBezorgFilter() {
+      const keuze = sessionStorage.getItem('bk_keuze');
+      if (!keuze) return null; // nog geen keuze gemaakt
+      if (keuze === 'afhaal') return null; // afhalen = alles zichtbaar, geen filter nodig
+      const status = sessionStorage.getItem('bk_bezorgstatus');
+      if (status === 'beschikbaar' || status === 'onbekend') return 'zelf';
+      // 'geen_bezorging' = buiten rijstraal maar post/DHL is wel mogelijk
+      if (status === 'geen_bezorging') return 'post';
+      // 'geblokkeerd' = expliciet verboden, alleen afhaal (geen filter nodig)
+      return null;
+    }
+
+    function bkSelecteer(keuze) {
+      bkKeuze = keuze;
+      document.getElementById('bk-opt-afhaal').classList.toggle('geselecteerd', keuze === 'afhaal');
+      document.getElementById('bk-opt-bezorgen').classList.toggle('geselecteerd', keuze === 'bezorgen');
+      document.getElementById('bk-bevestig-btn').disabled = false;
+    }
+
+    function bkBevestigen() {
+      if (!bkKeuze) return;
+      sessionStorage.setItem('bk_keuze', bkKeuze);
+      if (bkPostcode) sessionStorage.setItem('bk_postcode', bkPostcode);
+      document.getElementById('bk-overlay').style.display = 'none';
+      bkBadgeBijwerken();
+      // Herlaad producten en aanbiedingen met correcte filter
+      laadAanbiedingen();
+      const inhoud = document.getElementById('inhoud');
+      if (inhoud && inhoud.querySelector('.zoek-product-grid, .cat-producten-header')) {
+        // Er zijn productlijsten zichtbaar: herladen
+        if (_huidigGroepId) toonProducten(_huidigGroepId, _huidigGroepNaam);
+        else if (document.getElementById('cat-header').style.display !== 'none') toonAlleProducten(_alleProductenPagina || 1);
+      }
+    }
+
+    function bkBadgeBijwerken() {
+      const k = sessionStorage.getItem('bk_keuze');
+      const pc = sessionStorage.getItem('bk_postcode');
+      const badge = document.getElementById('bk-badge');
+      if (!k) { badge.style.display = 'none'; return; }
+      badge.style.display = 'flex';
+      const icon = k === 'bezorgen' ? '🚚' : '🏠';
+      const label = k === 'bezorgen' ? (pc ? 'Bezorgen · ' + pc : 'Bezorgen') : 'Afhalen';
+      badge.textContent = icon + ' ' + label;
+    }
+
+    function bkHeropenen() {
+      // Reset selectie
+      bkKeuze = null;
+      document.getElementById('bk-opt-afhaal').classList.remove('geselecteerd');
+      document.getElementById('bk-opt-bezorgen').classList.remove('geselecteerd', 'bk-opt-uitgeschakeld');
+      document.getElementById('bk-bevestig-btn').disabled = true;
+      document.getElementById('bk-check-status').style.display = 'none';
+      // Huidige postcode invullen zodat klant hem kan wijzigen
+      const pc = bkPostcode || sessionStorage.getItem('bk_postcode');
+      if (pc) document.getElementById('bk-pc-input').value = pc;
+      document.getElementById('bk-pc-fout').textContent = '';
+      // Toon postcodestap zodat klant postcode kan wijzigen
+      document.getElementById('bk-stap-postcode').style.display = 'block';
+      document.getElementById('bk-stap-keuze').style.display = 'none';
+      document.getElementById('bk-overlay').style.display = 'flex';
+    }
+
+    (async () => {
+      wmUpdateBadge();
+      // Laad alles parallel voor snellere start
+      const [, , sr] = await Promise.all([
+        renderSidebar(),
+        Promise.all([laadInstellingen(), laadSlider()]),
+        fetch('/api/sessie').catch(() => null)
+      ]);
+      // Sessie controleren → header aanpassen
+      let isIngelogd = false;
+      try {
+        const acc = document.getElementById('header-account');
+        if (sr && sr.ok) {
+          const s = await sr.json();
+          if (s.rol === 'klant') {
+            ingelogdeGebruiker = s;
+            isIngelogd = true;
+            acc.innerHTML = `
+              <a href="/profiel.html" style="color:rgba(255,255,255,0.75);text-decoration:none;font-size:.9rem">Hallo, ${escSiteHtml(s.naam)}</a>
+              <a href="/profiel.html" class="header-avatar" title="Mijn profiel">${escSiteHtml(s.naam.charAt(0).toUpperCase())}</a>`;
+          } else {
+            // medewerker / admin → link naar backend
+            acc.innerHTML = `<a href="/backend/admin.html" class="btn-login">Dashboard</a>`;
+          }
+        } else {
+          acc.innerHTML = `<a href="/login.html" class="btn-login">Inloggen</a>`;
+        }
+      } catch(e) { /* sessie check mislukt, standaard toon Inloggen */ }
+
+      // Bezorgkeuze overlay tonen als nog niet gedaan deze sessie
+      if (!sessionStorage.getItem('bk_keuze')) {
+        // Eerst overlay tonen; aanbiedingen worden geladen ná bevestigen (bkBevestigen)
+        bkTonen(isIngelogd);
+      } else {
+        // Keuze al bekend: laad aanbiedingen direct met juiste filter
+        bkBadgeBijwerken();
+        await laadAanbiedingen();
+      }
+    })().catch(() => {});
+  </script>
+</body>
+</html>
+  </script>
+</body>
+</html>

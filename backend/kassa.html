@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kassa</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #1a1a2e; color: #f0f0f0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* TOP BAR */
+  #topbar { background: #16213e; padding: 0 20px; height: 52px; display: flex; align-items: center; gap: 16px; border-bottom: 2px solid #0f3460; flex-shrink: 0; }
+  #topbar h1 { font-size: 1.1rem; font-weight: 800; color: #e07b2a; letter-spacing: .5px; flex-shrink: 0; }
+  #klok { font-size: .95rem; font-weight: 700; color: #aaa; margin-left: auto; }
+  #topbar-sluiten { background: none; border: 1px solid #444; color: #aaa; padding: 6px 14px; border-radius: 7px; cursor: pointer; font-size: .82rem; flex-shrink: 0; }
+  #topbar-sluiten:hover { border-color: #e74c3c; color: #e74c3c; }
+
+  /* LAYOUT */
+  #layout { display: flex; flex: 1; overflow: hidden; }
+
+  /* LINKER KOLOM */
+  #links { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #16213e; border-right: 2px solid #0f3460; }
+
+  /* Producten nav balk */
+  #prod-nav { background: #0f3460; padding: 10px 14px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; border-bottom: 1px solid #1a3a5a; }
+  #prod-terug { background: none; border: 1.5px solid #2a4a6a; color: #aaa; width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; display: none; align-items: center; justify-content: center; flex-shrink: 0; }
+  #prod-terug:hover { border-color: #e07b2a; color: #e07b2a; }
+  #prod-titel { font-size: .9rem; font-weight: 800; color: #d0d8e0; white-space: nowrap; flex-shrink: 0; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+  #zoek-wrap { flex: 1; position: relative; }
+  #zoek-input { width: 100%; padding: 9px 14px 9px 34px; border-radius: 9px; border: 1.5px solid #1a4a7a; background: #1a2a4a; color: #f0f0f0; font-size: .9rem; outline: none; font-family: inherit; }
+  #zoek-input:focus { border-color: #e07b2a; }
+  #zoek-input::placeholder { color: #445; }
+  #zoek-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #445; font-size: .85rem; pointer-events: none; }
+  #scanner-badge { display: flex; align-items: center; gap: 6px; padding: 6px 11px; background: rgba(44,122,44,.2); border: 1.5px solid #2c7a2c; border-radius: 8px; font-size: .75rem; font-weight: 700; color: #4aaa4a; white-space: nowrap; flex-shrink: 0; }
+  #scanner-dot { width: 7px; height: 7px; border-radius: 50%; background: #4aaa4a; animation: puls 1.2s ease-in-out infinite; }
+  @keyframes puls { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* Scan feedback */
+  #scan-feedback { display: none; padding: 8px 16px; font-size: .85rem; font-weight: 700; text-align: center; flex-shrink: 0; }
+
+  /* Content area */
+  #prod-content { flex: 1; overflow-y: auto; padding: 16px; background: #121828; }
+  #prod-content::-webkit-scrollbar { width: 4px; }
+  #prod-content::-webkit-scrollbar-thumb { background: #1a3a5a; border-radius: 2px; }
+
+  /* Groep tegels */
+  .groep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+  .groep-tegel { background: #16213e; border: 1.5px solid #1a3a5a; border-radius: 14px; cursor: pointer; overflow: hidden; transition: border-color .15s, background .15s; }
+  .groep-tegel:hover { border-color: #e07b2a; background: #1a2a40; }
+  .groep-img-wrap { position: relative; width: 100%; height: 100px; background: #0f3460; display: flex; align-items: center; justify-content: center; font-size: 2rem; overflow: hidden; }
+  .groep-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .groep-naam { padding: 10px 12px 12px; font-size: .85rem; font-weight: 700; color: #d0d8e0; line-height: 1.3; }
+  .groep-sub { font-size: .7rem; color: #556; margin-top: 2px; }
+
+  /* Product tegels */
+  .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+  .prod-tegel { background: #16213e; border: 1.5px solid #1a3a5a; border-radius: 14px; overflow: hidden; cursor: pointer; transition: border-color .15s, transform .1s; display: flex; flex-direction: column; }
+  .prod-tegel:hover { border-color: #e07b2a; transform: translateY(-2px); }
+  .prod-tegel:active { transform: scale(.97); }
+  .prod-img-wrap { position: relative; width: 100%; height: 90px; background: #0f3460; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; overflow: hidden; flex-shrink: 0; }
+  .prod-img-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .prod-tegel-body { padding: 10px 12px 12px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .prod-tegel-naam { font-size: .83rem; font-weight: 700; color: #d8e0e8; line-height: 1.3; }
+  .prod-tegel-code { font-size: .68rem; color: #445; }
+  .prod-tegel-prijs { font-size: .95rem; font-weight: 800; color: #e07b2a; margin-top: auto; }
+  .prod-tegel-eenheid { font-size: .7rem; font-weight: 500; color: #667; }
+
+  /* Secties */
+  .sectie-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #445; margin-bottom: 10px; margin-top: 4px; }
+  .sectie-blok { margin-bottom: 24px; }
+  .content-msg { text-align: center; color: #445; padding: 60px 20px; font-size: .9rem; }
+
+  /* RECHTER KOLOM */
+  #rechts { width: 360px; flex-shrink: 0; display: flex; flex-direction: column; background: #0d1b2a; }
+  #cart-items { flex: 1; overflow-y: auto; padding: 8px; }
+  #cart-items::-webkit-scrollbar { width: 3px; }
+  #cart-items::-webkit-scrollbar-thumb { background: #1a4a7a; }
+  #cart-leeg { text-align: center; color: #334; padding: 60px 20px; font-size: .9rem; }
+  .cart-rij { display: flex; align-items: center; gap: 8px; padding: 10px; border-radius: 10px; margin-bottom: 4px; background: #16213e; border: 1px solid #1a3a5a; }
+  .cart-info { flex: 1; min-width: 0; }
+  .cart-naam { font-size: .85rem; font-weight: 700; color: #e0e0e0; line-height: 1.3; }
+  .cart-prijs-eenheid { font-size: .7rem; color: #667; }
+  .cart-aantal-wrap { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .cart-aantal-wrap button { width: 26px; height: 26px; border-radius: 6px; border: none; cursor: pointer; font-size: 1rem; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .btn-min { background: #1a3a5a; color: #aaa; }
+  .btn-min:hover { background: #e74c3c; color: #fff; }
+  .btn-plus { background: #1a3a5a; color: #aaa; }
+  .btn-plus:hover { background: #27ae60; color: #fff; }
+  .cart-aantal { width: 38px; text-align: center; background: #0f3460; border: 1px solid #1a4a7a; color: #fff; border-radius: 6px; padding: 3px 0; font-size: .9rem; font-weight: 700; }
+  .cart-totaal { font-size: .9rem; font-weight: 800; color: #e07b2a; flex-shrink: 0; min-width: 58px; text-align: right; }
+  .cart-del { background: none; border: none; color: #334; cursor: pointer; font-size: .9rem; padding: 4px; }
+  .cart-del:hover { color: #e74c3c; }
+
+  #totaal-balk { padding: 14px 16px; background: #16213e; border-top: 2px solid #0f3460; border-bottom: 2px solid #0f3460; display: flex; flex-direction: column; gap: 5px; flex-shrink: 0; }
+  .totaal-rij { display: flex; justify-content: space-between; font-size: .83rem; color: #889; }
+  .totaal-rij.groot { font-size: 1.4rem; font-weight: 900; color: #fff; }
+  .totaal-rij.groot span:last-child { color: #e07b2a; }
+
+  #betaal-knoppen { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+  .btn-betaal { width: 100%; padding: 16px; border-radius: 12px; border: none; font-size: 1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all .15s; }
+  .btn-betaal:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .btn-betaal:active { transform: scale(.98); }
+  .btn-betaal:disabled { opacity: .35; cursor: not-allowed; transform: none; filter: none; }
+  #btn-pin  { background: #1565c0; color: #fff; }
+  #btn-cash { background: #27ae60; color: #fff; }
+  #btn-leeg { background: none; border: 1px solid #2a3a4a; color: #556; padding: 10px; font-size: .82rem; }
+  #btn-afrekenen { background: #e07b2a; color: #fff; font-size: 1.1rem; }
+
+  /* CHECKOUT OVERLAY */
+  #checkout-overlay { display: none; position: fixed; inset: 0; background: #0d1b2a; z-index: 200; flex-direction: column; }
+  #checkout-header { background: #16213e; border-bottom: 2px solid #0f3460; padding: 16px 24px; display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
+  #checkout-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 32px 24px; overflow-y: auto; }
+  .checkout-stap { display: none; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 600px; }
+  .checkout-stap.actief { display: flex; }
+  .checkout-keuze-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
+  .checkout-keuze-grid.drie { grid-template-columns: 1fr 1fr 1fr; }
+  .ck-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 28px 20px; border-radius: 16px; border: 2px solid #1a3a5a; background: #16213e; cursor: pointer; font-family: inherit; transition: border-color .15s, background .15s; }
+  .ck-btn:hover:not(:disabled) { border-color: #e07b2a; background: #1a2a40; }
+  .ck-btn:disabled { opacity: .35; cursor: not-allowed; }
+  .ck-btn .ck-icon { font-size: 2.5rem; }
+  .ck-btn .ck-label { font-size: 1rem; font-weight: 800; color: #e0e0e0; }
+  .ck-btn .ck-sub { font-size: .78rem; color: #556; margin-top: 2px; }
+  .ck-btn.geselecteerd { border-color: #e07b2a; background: rgba(224,123,42,.12); }
+  .checkout-totaal-toon { font-size: 2.5rem; font-weight: 900; color: #e07b2a; }
+  .checkout-stap-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: #445; }
+
+  /* BETAAL DIALOOG */
+  #betaal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; align-items: center; justify-content: center; }
+  #betaal-box { background: #16213e; border-radius: 20px; border: 2px solid #0f3460; padding: 32px; width: 420px; max-width: 95vw; }
+  #betaal-box h2 { font-size: 1.2rem; color: #e07b2a; margin-bottom: 20px; }
+  .betaal-bedrag { font-size: 3rem; font-weight: 900; color: #fff; text-align: center; margin: 16px 0; }
+  .betaal-label { font-size: .78rem; font-weight: 700; color: #889; text-transform: uppercase; letter-spacing: .5px; text-align: center; }
+  #cash-input-wrap { margin: 16px 0; }
+  #cash-input-wrap label { font-size: .82rem; color: #889; display: block; margin-bottom: 6px; }
+  #cash-bedrag { width: 100%; padding: 14px; background: #0f3460; border: 2px solid #1a4a7a; border-radius: 10px; color: #fff; font-size: 1.4rem; font-weight: 800; text-align: center; outline: none; font-family: inherit; }
+  #cash-bedrag:focus { border-color: #e07b2a; }
+  #wisselgeld-toon { text-align: center; font-size: 1rem; font-weight: 700; color: #27ae60; margin: 8px 0; min-height: 28px; }
+  .betaal-snelknoppen { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; justify-content: center; }
+  .btn-snel { background: #0f3460; border: 1px solid #1a4a7a; color: #aaa; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: .85rem; font-weight: 700; }
+  .btn-snel:hover { border-color: #e07b2a; color: #e07b2a; }
+  .betaal-acties { display: flex; gap: 10px; margin-top: 20px; }
+  .betaal-acties button { flex: 1; padding: 14px; border-radius: 10px; border: none; font-size: .95rem; font-weight: 800; cursor: pointer; }
+  #btn-betaal-annuleer { background: #1a2a3a; color: #889; }
+  #btn-betaal-ok { background: #27ae60; color: #fff; }
+  #btn-betaal-ok:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* Numpad */
+  #numpad { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 12px 0; }
+  .np-btn { background: #0f3460; border: 1px solid #1a4a7a; color: #d0d8e0; padding: 13px; border-radius: 9px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-align: center; }
+  .np-btn:hover { background: #1a4a7a; }
+  .np-btn.np-del { background: #1a2a3a; color: #e74c3c; }
+  .np-btn.np-00 { color: #889; }
+
+  /* KLANT OVERLAY */
+  #klant-overlay { display: none; position: fixed; inset: 0; background: #0d1b2a; z-index: 300; flex-direction: column; }
+  #klant-box { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  #klant-zoek { width: 100%; padding: 11px 16px; background: #0f3460; border: 1.5px solid #1a4a7a; border-radius: 10px; color: #f0f0f0; font-size: .95rem; font-family: inherit; outline: none; box-sizing: border-box; }
+  #klant-zoek:focus { border-color: #e07b2a; }
+  #klant-zoek::placeholder { color: #445; }
+  .klant-tegel { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 14px 16px; background: #0f3460; border: 1.5px solid #1a3a5a; border-radius: 12px; cursor: pointer; font-family: inherit; text-align: left; min-width: 160px; max-width: 220px; transition: border-color .15s, background .15s; }
+  .klant-tegel:hover { border-color: #e07b2a; background: #1a2a40; }
+  .klant-tegel-naam { font-size: .9rem; font-weight: 700; color: #e0e0e0; word-break: break-word; }
+  .klant-tegel-sub { font-size: .75rem; color: #556; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 188px; }
+  .klant-rij { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #1a3a5a; cursor: pointer; transition: background .12s; }
+  .klant-rij:hover { background: #1a2a40; }
+  .klant-korting-badge { display: inline-block; background: #c0392b; color: #fff; font-size: .68rem; font-weight: 700; padding: 1px 7px; border-radius: 20px; margin-left: 5px; }
+
+  /* SUCCES scherm */
+  #succes-overlay { display: none; position: fixed; inset: 0; background: #0a1628; z-index: 200; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+  #succes-vinkje { font-size: 6rem; }
+  #succes-tekst { font-size: 1.8rem; font-weight: 900; color: #27ae60; }
+  #succes-sub { font-size: 1rem; color: #667; }
+  #succes-wisselgeld { font-size: 2rem; font-weight: 800; color: #fff; }
+  #succes-terug { background: #e07b2a; color: #fff; border: none; padding: 16px 40px; border-radius: 14px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <h1>🏧 Kassa</h1>
+  <!-- Geselecteerde klant badge -->
+  <div id="klant-badge" style="display:none;align-items:center;gap:8px;background:rgba(39,174,96,.18);border:1.5px solid #27ae60;border-radius:9px;padding:5px 12px;font-size:.82rem">
+    <span style="color:#4aaa4a;font-weight:700">👤</span>
+    <span id="klant-badge-naam" style="font-weight:700;color:#e0e0e0"></span>
+    <span id="klant-badge-korting" style="display:none" class="klant-korting-badge">Korting</span>
+    <button onclick="klantOverlayOpen()" style="background:none;border:none;color:#667;cursor:pointer;font-size:.78rem;padding:0 2px">↩</button>
+    <button onclick="klantDeselecteer()" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:1rem;padding:0;line-height:1">×</button>
+  </div>
+  <button id="klant-selecteer-btn" onclick="klantOverlayOpen()" style="background:rgba(255,255,255,.07);border:1px solid #2a3a4a;color:#aaa;padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-family:inherit">👤 Klant</button>
+  <span id="klok"></span>
+  <button id="topbar-sluiten" onclick="window.close()">✕ Sluiten</button>
+</div>
+
+<!-- LAYOUT -->
+<div id="layout">
+
+  <!-- LINKS: productnavigatie -->
+  <div id="links">
+    <div id="prod-nav">
+      <button id="prod-terug" onclick="navTerug()" title="Terug">←</button>
+      <span id="prod-titel">Productgroepen</span>
+      <div id="zoek-wrap">
+        <span id="zoek-icon">🔍</span>
+        <input id="zoek-input" type="search" placeholder="Zoek of scan barcode…" autocomplete="off" oninput="zoekGewijzigd()" />
+      </div>
+      <div id="scanner-badge">
+        <div id="scanner-dot"></div>
+        Scanner actief
+      </div>
+    </div>
+    <div id="scan-feedback"></div>
+    <div id="prod-content"><div class="content-msg">Laden…</div></div>
+  </div>
+
+  <!-- RECHTS: winkelwagen -->
+  <div id="rechts">
+    <div id="cart-items"><div id="cart-leeg">🛒<br><br>Nog niets toegevoegd</div></div>
+
+    <div id="totaal-balk">
+      <div class="totaal-rij"><span>Subtotaal excl. BTW</span><span id="sub-totaal">€ 0,00</span></div>
+      <div class="totaal-rij"><span>BTW (21%)</span><span id="btw-bedrag">€ 0,00</span></div>
+      <div class="totaal-rij groot"><span>Totaal</span><span id="cart-totaal-groot">€ 0,00</span></div>
+    </div>
+
+    <div id="betaal-knoppen">
+      <button class="btn-betaal" id="btn-afrekenen" onclick="checkoutOpen()" disabled>✓ Afrekenen</button>
+      <button class="btn-betaal" id="btn-leeg" onclick="cartLeeg()">🗑 Bon leegmaken</button>
+    </div>
+  </div>
+</div>
+
+<!-- KLANT OVERLAY -->
+<div id="klant-overlay">
+  <div id="klant-box">
+    <!-- Header -->
+    <div style="background:#16213e;border-bottom:2px solid #0f3460;padding:16px 24px;display:flex;align-items:center;gap:16px;flex-shrink:0">
+      <span style="font-size:1.1rem;font-weight:800;color:#e07b2a">👤 Klant selecteren</span>
+      <div style="flex:1;position:relative">
+        <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#445;pointer-events:none">🔍</span>
+        <input id="klant-zoek" type="text" placeholder="Zoek op naam, e-mail, telefoon, postcode…" oninput="klantZoek(this.value)"
+          style="padding-left:36px" />
+      </div>
+      <button onclick="klantOverlaySluit()" style="background:none;border:1px solid #2a3a4a;color:#aaa;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;font-family:inherit">Annuleren</button>
+    </div>
+    <!-- Scrollbaar -->
+    <div style="overflow-y:auto;padding:24px;flex:1;background:#121828">
+      <div id="klant-top-label" style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#445;margin-bottom:14px">Recente klanten</div>
+      <div id="klant-tegels" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px"><div style="color:#445;font-size:.85rem;padding:8px 0">Laden…</div></div>
+      <div id="klant-resultaten" style="display:none">
+        <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#445;margin-bottom:10px">Zoekresultaten</div>
+        <div id="klant-resultaten-lijst" style="background:#16213e;border-radius:12px;border:1px solid #1a3a5a;overflow:hidden"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT OVERLAY -->
+<div id="checkout-overlay">
+  <div id="checkout-header">
+    <button id="checkout-terug-btn" onclick="checkoutTerug()" style="background:none;border:1px solid #2a3a4a;color:#aaa;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;font-family:inherit">← Terug</button>
+    <div style="flex:1;text-align:center">
+      <span id="checkout-stap-indicator" style="font-size:.8rem;font-weight:700;color:#445"></span>
+    </div>
+    <button onclick="checkoutSluit()" style="background:none;border:1px solid #2a3a4a;color:#aaa;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.85rem;font-family:inherit">Annuleren</button>
+  </div>
+  <div id="checkout-body">
+
+    <!-- STAP 1: Bezorging -->
+    <div class="checkout-stap" id="co-stap-bezorging">
+      <div class="checkout-stap-label">Stap 1 van 2 — Bezorging of afhaal?</div>
+      <div class="checkout-totaal-toon" id="co-totaal-toon">€ 0,00</div>
+      <div class="checkout-keuze-grid" style="max-width:480px;width:100%">
+        <button class="ck-btn" onclick="coKiesBezorging('afhaal')">
+          <span class="ck-icon">📦</span>
+          <span class="ck-label">Afhalen</span>
+          <span class="ck-sub">Klant haalt op</span>
+        </button>
+        <button class="ck-btn" onclick="coKiesBezorging('bezorging')">
+          <span class="ck-icon">🚚</span>
+          <span class="ck-label">Bezorgen</span>
+          <span class="ck-sub">Wij leveren</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- STAP 2: Betaalmethode -->
+    <div class="checkout-stap" id="co-stap-betaling">
+      <div class="checkout-stap-label">Stap 2 van 2 — Betaalmethode</div>
+      <div class="checkout-totaal-toon" id="co-totaal-toon2">€ 0,00</div>
+      <div class="checkout-keuze-grid drie" style="max-width:600px;width:100%">
+        <button class="ck-btn" id="co-btn-cash" onclick="coKiesBetaal('cash')">
+          <span class="ck-icon">💵</span>
+          <span class="ck-label">Contant</span>
+        </button>
+        <button class="ck-btn" id="co-btn-pin" onclick="coKiesBetaal('pin')">
+          <span class="ck-icon">💳</span>
+          <span class="ck-label">PIN</span>
+        </button>
+        <button class="ck-btn" id="co-btn-rekening" onclick="coKiesBetaal('rekening')">
+          <span class="ck-icon">🧾</span>
+          <span class="ck-label">Op rekening</span>
+          <span id="co-rekening-sub" class="ck-sub">Klant vereist</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BETAAL DIALOOG -->
+<div id="betaal-overlay" style="display:none">
+  <div id="betaal-box">
+    <h2 id="betaal-titel">💳 Betaling</h2>
+    <div class="betaal-label">Te betalen</div>
+    <div class="betaal-bedrag" id="betaal-bedrag-toon">€ 0,00</div>
+    <div id="cash-input-wrap" style="display:none">
+      <label>Ontvangen bedrag (€)</label>
+      <input id="cash-bedrag" type="number" min="0" step="0.01" placeholder="0.00" oninput="berekenWisselgeld()" />
+      <div id="numpad">
+        <button class="np-btn" onclick="npDruk('1')">1</button>
+        <button class="np-btn" onclick="npDruk('2')">2</button>
+        <button class="np-btn" onclick="npDruk('3')">3</button>
+        <button class="np-btn" onclick="npDruk('4')">4</button>
+        <button class="np-btn" onclick="npDruk('5')">5</button>
+        <button class="np-btn" onclick="npDruk('6')">6</button>
+        <button class="np-btn" onclick="npDruk('7')">7</button>
+        <button class="np-btn" onclick="npDruk('8')">8</button>
+        <button class="np-btn" onclick="npDruk('9')">9</button>
+        <button class="np-btn np-00" onclick="npDruk('00')">00</button>
+        <button class="np-btn" onclick="npDruk('0')">0</button>
+        <button class="np-btn np-del" onclick="npDel()">⌫</button>
+      </div>
+      <div class="betaal-snelknoppen" id="snelknoppen"></div>
+      <div id="wisselgeld-toon"></div>
+    </div>
+    <div class="betaal-acties">
+      <button id="btn-betaal-annuleer" onclick="betaalSluit()">Annuleren</button>
+      <button id="btn-betaal-ok" onclick="betaalBevestig()">✓ Bevestigen</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCES SCHERM -->
+<div id="succes-overlay" style="display:none">
+  <div id="succes-vinkje">✅</div>
+  <div id="succes-tekst">Betaling geslaagd!</div>
+  <div id="succes-sub" style="display:none"></div>
+  <div id="succes-wisselgeld" style="display:none"></div>
+  <button id="succes-terug" onclick="succesTerug()">Nieuwe bon</button>
+</div>
+
+<script>
+  // ============================================================
+  // STATE
+  // ============================================================
+  let groepenCache = [];
+  let navStack = [];        // [{id, naam}]
+  let cart = [];            // [{product, aantal}]
+  let geselecteerdeKlant = null; // { id, naam, kortingsklant }
+  let prodCache = {};       // id -> product object
+  let betaalModus = null;
+  let numpadWaarde = '';
+  let zoekTimer = null;
+
+  // Barcode scanner: USB scanners sturen tekens razendsnel achter elkaar
+  let barcodeBuffer = '';
+  let barcodeTimer = null;
+  const BARCODE_MS = 80;
+
+  const BTW_FACTOR = 0.21;
+
+  // ============================================================
+  // KLOK
+  // ============================================================
+  setInterval(() => {
+    document.getElementById('klok').textContent =
+      new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }, 1000);
+  document.getElementById('klok').textContent =
+    new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  // ============================================================
+  // BARCODE SCANNER
+  // ============================================================
+  document.addEventListener('keydown', function(e) {
+    const active = document.activeElement;
+    // Zit in betaal dialoog input -> negeer voor scanner
+    if (active && active.id === 'cash-bedrag') return;
+    // Betaal overlay open -> negeer
+    if (document.getElementById('betaal-overlay').style.display !== 'none') return;
+
+    if (e.key === 'Enter') {
+      if (barcodeBuffer.length >= 3) scanVerwerk(barcodeBuffer.trim());
+      barcodeBuffer = '';
+      clearTimeout(barcodeTimer);
+      // Als zoek-input focus heeft en er maar 1 resultaat is -> voeg toe (zie zoekGewijzigd)
+      return;
+    }
+    if (e.key.length === 1) {
+      barcodeBuffer += e.key;
+      clearTimeout(barcodeTimer);
+      barcodeTimer = setTimeout(() => { barcodeBuffer = ''; }, BARCODE_MS);
+    }
+  });
+
+  async function scanVerwerk(code) {
+    // Exacte match op barcode of artikelcode — anders niets doen
+    const exact = await fetch('/api/producten/scan?code=' + encodeURIComponent(code))
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null);
+
+    scanFeedback(code, exact && exact.id ? exact : null);
+    if (exact && exact.id) voegToe(exact);
+  }
+
+  function scanFeedback(code, product) {
+    const el = document.getElementById('scan-feedback');
+    el.style.display = 'block';
+    if (product) {
+      el.style.background = 'rgba(39,174,96,.18)';
+      el.style.color = '#4aaa4a';
+      el.textContent = '✓ ' + product.naam + ' — toegevoegd';
+    } else {
+      el.style.background = 'rgba(231,76,60,.18)';
+      el.style.color = '#e74c3c';
+      el.textContent = '✗ Barcode niet gevonden: ' + code;
+    }
+    setTimeout(() => { el.style.display = 'none'; }, 2500);
+  }
+
+  // ============================================================
+  // GROEPEN NAVIGATIE
+  // ============================================================
+  async function init() {
+    groepenCache = await fetch('/api/productgroepen').then(r => r.json()).catch(() => []);
+    await toonGroepen(null);
+  }
+
+  function navTekenBalk() {
+    const heeftNav = navStack.length > 0;
+    const terugBtn = document.getElementById('prod-terug');
+    terugBtn.style.display = heeftNav ? 'flex' : 'none';
+    document.getElementById('prod-titel').textContent =
+      heeftNav ? navStack[navStack.length - 1].naam : 'Productgroepen';
+    document.getElementById('zoek-input').value = '';
+  }
+
+  async function navNaar(groepId, naam) {
+    navStack.push({ id: groepId, naam });
+    navTekenBalk();
+    await toonGroepen(groepId);
+  }
+
+  async function navTerug() {
+    navStack.pop();
+    navTekenBalk();
+    const parentId = navStack.length > 0 ? navStack[navStack.length - 1].id : null;
+    await toonGroepen(parentId);
+  }
+
+  async function toonGroepen(parentId) {
+    const content = document.getElementById('prod-content');
+    content.innerHTML = '<div class="content-msg">Laden…</div>';
+
+    const kinderen = groepenCache.filter(g => (g.parent_id ?? null) === parentId);
+
+    let producten = [];
+    if (parentId !== null) {
+      const data = await fetch('/api/producten?per_pagina=200&groep_id=' + parentId)
+        .then(r => r.json()).catch(() => ({ items: [] }));
+      producten = (data.items || []).filter(p => p.actief);
+    }
+
+    let html = '';
+
+    if (kinderen.length > 0) {
+      html += '<div class="sectie-blok">';
+      if (producten.length > 0) html += '<div class="sectie-label">Subgroepen</div>';
+      html += '<div class="groep-grid">' + kinderen.map(groepTegel).join('') + '</div></div>';
+    }
+
+    if (producten.length > 0) {
+      html += '<div class="sectie-blok">';
+      if (kinderen.length > 0) html += '<div class="sectie-label">Producten in deze groep</div>';
+      html += '<div class="prod-grid">' + producten.map(prodTegel).join('') + '</div></div>';
+    }
+
+    if (!html) html = '<div class="content-msg" style="font-style:italic">Geen producten of subgroepen gevonden</div>';
+    content.innerHTML = html;
+  }
+
+  function groepTegel(g) {
+    const subAantal = groepenCache.filter(x => x.parent_id === g.id).length;
+    const subLabel = subAantal > 0 ? '<div class="groep-sub">' + subAantal + ' subgroep' + (subAantal !== 1 ? 'en' : '') + '</div>' : '';
+    return '<div class="groep-tegel" onclick="navNaar(' + g.id + ',\'' + escAttr(g.naam) + '\')">'
+      + '<div class="groep-img-wrap">📦<img src="/api/groepen/' + g.id + '/afbeelding" onerror="this.style.display=\'none\'" /></div>'
+      + '<div class="groep-naam">' + escHtml(g.naam) + subLabel + '</div>'
+      + '</div>';
+  }
+
+  function prodTegel(p) {
+    prodCache[p.id] = p;   // sla op zodat voegToe(id) het kan ophalen
+    const prijs = p.prijs != null ? '€ ' + parseFloat(p.prijs).toFixed(2).replace('.', ',') : '—';
+    const eenheid = escHtml(p.eenheid || 'st');
+    const imgHtml = p.afbeelding
+      ? '<img src="/producten/' + escAttr(p.afbeelding) + '" onerror="this.style.display=\'none\'" />'
+      : '';
+    return '<div class="prod-tegel" onclick="voegToe(' + p.id + ')">'
+      + '<div class="prod-img-wrap">📦' + imgHtml + '</div>'
+      + '<div class="prod-tegel-body">'
+      + '<div class="prod-tegel-naam">' + escHtml(p.naam) + '</div>'
+      + (p.artikelcode ? '<div class="prod-tegel-code">' + escHtml(p.artikelcode) + '</div>' : '')
+      + '<div class="prod-tegel-prijs">' + prijs + ' <span class="prod-tegel-eenheid">/ ' + eenheid + '</span></div>'
+      + '</div></div>';
+  }
+
+  // ============================================================
+  // ZOEKEN
+  // ============================================================
+  function zoekGewijzigd() {
+    clearTimeout(zoekTimer);
+    const q = document.getElementById('zoek-input').value.trim();
+    if (!q) {
+      const parentId = navStack.length > 0 ? navStack[navStack.length - 1].id : null;
+      toonGroepen(parentId);
+      return;
+    }
+    zoekTimer = setTimeout(() => zoekProducten(q), 260);
+  }
+
+  async function zoekProducten(q) {
+    const content = document.getElementById('prod-content');
+    content.innerHTML = '<div class="content-msg">Zoeken…</div>';
+    const data = await fetch('/api/producten?per_pagina=200&q=' + encodeURIComponent(q))
+      .then(r => r.json()).catch(() => ({ items: [] }));
+    const items = (data.items || []).filter(p => p.actief);
+    if (!items.length) {
+      content.innerHTML = '<div class="content-msg" style="font-style:italic">Geen producten gevonden voor "' + escHtml(q) + '"</div>';
+      return;
+    }
+    content.innerHTML = '<div class="prod-grid">' + items.map(prodTegel).join('') + '</div>';
+  }
+
+  // ============================================================
+  // WINKELWAGEN
+  // ============================================================
+  function voegToe(product) {
+    if (typeof product === 'number') {
+      // id meegegeven — haal op via cache of API
+      if (prodCache[product]) { voegToe(prodCache[product]); return; }
+      fetch('/api/producten/' + product).then(r => r.json()).then(p => { prodCache[p.id] = p; voegToe(p); }).catch(() => {});
+      return;
+    }
+    prodCache[product.id] = product;
+    const bestaand = cart.find(r => r.product.id === product.id);
+    if (bestaand) bestaand.aantal++;
+    else cart.push({ product, aantal: 1 });
+    renderCart();
+  }
+
+  function cartAantal(i, d) {
+    cart[i].aantal += d;
+    if (cart[i].aantal <= 0) cart.splice(i, 1);
+    renderCart();
+  }
+
+  function cartAantalInput(i, v) {
+    const n = parseFloat(v);
+    if (isNaN(n) || n <= 0) cart.splice(i, 1);
+    else cart[i].aantal = n;
+    renderCart();
+  }
+
+  function cartVerwijder(i) { cart.splice(i, 1); renderCart(); }
+
+  function cartLeeg() {
+    if (!cart.length) return;
+    if (!confirm('Bon leegmaken?')) return;
+    cart = []; renderCart();
+  }
+
+  function renderCart() {
+    const el = document.getElementById('cart-items');
+    if (!cart.length) {
+      el.innerHTML = '<div id="cart-leeg">🛒<br><br>Nog niets toegevoegd</div>';
+    } else {
+      el.innerHTML = cart.map((r, i) => {
+        const t = parseFloat(r.product.prijs || 0) * r.aantal;
+        return '<div class="cart-rij">'
+          + '<div class="cart-info"><div class="cart-naam">' + escHtml(r.product.naam) + '</div>'
+          + '<div class="cart-prijs-eenheid">€ ' + parseFloat(r.product.prijs||0).toFixed(2).replace('.',',') + ' / ' + escHtml(r.product.eenheid||'st') + '</div></div>'
+          + '<div class="cart-aantal-wrap">'
+          + '<button class="btn-min" onclick="cartAantal(' + i + ',-1)">−</button>'
+          + '<input class="cart-aantal" type="number" min="0.01" step="any" value="' + r.aantal + '" onchange="cartAantalInput(' + i + ',this.value)" />'
+          + '<button class="btn-plus" onclick="cartAantal(' + i + ',1)">+</button>'
+          + '</div>'
+          + '<div class="cart-totaal">€ ' + t.toFixed(2).replace('.',',') + '</div>'
+          + '<button class="cart-del" onclick="cartVerwijder(' + i + ')">✕</button>'
+          + '</div>';
+      }).join('');
+    }
+    const subTotaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0);
+    const btw = subTotaal * BTW_FACTOR;
+    const totaalInclBTW = subTotaal + btw;
+    document.getElementById('sub-totaal').textContent = '€ ' + subTotaal.toFixed(2).replace('.', ',');
+    document.getElementById('btw-bedrag').textContent = '€ ' + btw.toFixed(2).replace('.', ',');
+    document.getElementById('cart-totaal-groot').textContent = '€ ' + totaalInclBTW.toFixed(2).replace('.', ',');
+    document.getElementById('btn-afrekenen').disabled = !cart.length;
+  }
+
+  let _coBezorgwijze = null;
+
+  function checkoutOpen() {
+    if (!cart.length) return;
+    _coBezorgwijze = null;
+    const totaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0) * (1 + BTW_FACTOR);
+    const totaalTxt = '\u20ac\u00a0' + totaal.toFixed(2).replace('.', ',');
+    document.getElementById('co-totaal-toon').textContent = totaalTxt;
+    document.getElementById('co-totaal-toon2').textContent = totaalTxt;
+    // Op rekening: disabled als geen klant
+    const heeftKlant = !!geselecteerdeKlant;
+    const btnRek = document.getElementById('co-btn-rekening');
+    btnRek.disabled = !heeftKlant;
+    document.getElementById('co-rekening-sub').textContent = heeftKlant
+      ? geselecteerdeKlant.naam
+      : 'Klant vereist';
+    coToonStap('bezorging');
+    document.getElementById('checkout-overlay').style.display = 'flex';
+  }
+
+  function checkoutSluit() {
+    document.getElementById('checkout-overlay').style.display = 'none';
+  }
+
+  function coToonStap(stap) {
+    document.querySelectorAll('.checkout-stap').forEach(s => s.classList.remove('actief'));
+    document.getElementById('co-stap-' + stap).classList.add('actief');
+    document.getElementById('checkout-stap-indicator').textContent =
+      stap === 'bezorging' ? 'Stap 1 van 2' : 'Stap 2 van 2';
+    document.getElementById('checkout-terug-btn').style.visibility =
+      stap === 'bezorging' ? 'hidden' : 'visible';
+  }
+
+  function checkoutTerug() { coToonStap('bezorging'); }
+
+  function coKiesBezorging(keuze) {
+    _coBezorgwijze = keuze;
+    coToonStap('betaling');
+  }
+
+  function coKiesBetaal(methode) {
+    checkoutSluit();
+    if (methode === 'cash') {
+      betaalOpen('cash');
+    } else if (methode === 'pin') {
+      betaalOpen('pin');
+    } else if (methode === 'rekening') {
+      betaalBevestigDirect('rekening');
+    }
+  }
+
+  async function betaalBevestigDirect(methode) {
+    const totaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0) * (1 + BTW_FACTOR);
+    await fetch('/api/kassa/verkoop', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        betaalmethode: methode, totaal,
+        bezorgwijze: _coBezorgwijze || 'afhaal',
+        klant_id: geselecteerdeKlant ? geselecteerdeKlant.id : null,
+        regels: cart.map(r => ({ product_id: r.product.id, naam: r.product.naam, aantal: r.aantal, prijs_per_stuk: parseFloat(r.product.prijs || 0) }))
+      })
+    }).catch(() => {});
+    toonSucces(0);
+  }
+
+  // ============================================================
+  // BETALEN
+  // ============================================================
+  function betaalOpen(modus) {
+    if (!cart.length) return;
+    betaalModus = modus;
+    const totaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0) * (1 + BTW_FACTOR);
+    document.getElementById('betaal-bedrag-toon').textContent = '€ ' + totaal.toFixed(2).replace('.', ',');
+    document.getElementById('betaal-titel').textContent = modus === 'pin' ? '💳 PIN betaling' : '💵 Contant betalen';
+    document.getElementById('cash-input-wrap').style.display = modus === 'cash' ? '' : 'none';
+    if (modus === 'cash') {
+      numpadWaarde = '';
+      document.getElementById('cash-bedrag').value = '';
+      document.getElementById('wisselgeld-toon').textContent = '';
+      const snellen = [...new Set([Math.ceil(totaal), Math.ceil(totaal/5)*5, Math.ceil(totaal/10)*10, Math.ceil(totaal/20)*20, Math.ceil(totaal/50)*50])]
+        .filter(b => b >= totaal).slice(0, 5);
+      document.getElementById('snelknoppen').innerHTML = snellen.map(b =>
+        '<button class="btn-snel" onclick="cashSnelKies(' + b + ')">€ ' + b + '</button>').join('');
+    }
+    document.getElementById('btn-betaal-ok').disabled = modus === 'cash';
+    document.getElementById('betaal-overlay').style.display = 'flex';
+    if (modus === 'cash') setTimeout(() => document.getElementById('cash-bedrag').focus(), 50);
+  }
+
+  function betaalSluit() { document.getElementById('betaal-overlay').style.display = 'none'; }
+
+  function cashSnelKies(b) {
+    numpadWaarde = (b * 100).toString();
+    document.getElementById('cash-bedrag').value = b.toFixed(2);
+    berekenWisselgeld();
+  }
+
+  function npDruk(t) {
+    numpadWaarde += t;
+    if (numpadWaarde.length > 8) numpadWaarde = numpadWaarde.slice(-8);
+    document.getElementById('cash-bedrag').value = (parseInt(numpadWaarde || '0') / 100).toFixed(2);
+    berekenWisselgeld();
+  }
+
+  function npDel() {
+    numpadWaarde = numpadWaarde.slice(0, -1);
+    document.getElementById('cash-bedrag').value = numpadWaarde ? (parseInt(numpadWaarde) / 100).toFixed(2) : '';
+    berekenWisselgeld();
+  }
+
+  function berekenWisselgeld() {
+    const totaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0) * (1 + BTW_FACTOR);
+    const ontvangen = parseFloat(document.getElementById('cash-bedrag').value) || 0;
+    const wissel = ontvangen - totaal;
+    const el = document.getElementById('wisselgeld-toon');
+    if (ontvangen >= totaal) {
+      el.textContent = 'Wisselgeld: € ' + wissel.toFixed(2).replace('.', ',');
+      el.style.color = '#27ae60';
+      document.getElementById('btn-betaal-ok').disabled = false;
+    } else if (ontvangen > 0) {
+      el.textContent = 'Tekort: € ' + Math.abs(wissel).toFixed(2).replace('.', ',');
+      el.style.color = '#e74c3c';
+      document.getElementById('btn-betaal-ok').disabled = true;
+    } else {
+      el.textContent = '';
+      document.getElementById('btn-betaal-ok').disabled = true;
+    }
+  }
+
+  async function betaalBevestig() {
+    const totaal = cart.reduce((s, r) => s + parseFloat(r.product.prijs || 0) * r.aantal, 0) * (1 + BTW_FACTOR);
+    const ontvangen = betaalModus === 'cash' ? (parseFloat(document.getElementById('cash-bedrag').value) || 0) : totaal;
+    const wisselgeld = betaalModus === 'cash' ? ontvangen - totaal : 0;
+    await fetch('/api/kassa/verkoop', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        betaalmethode: betaalModus, totaal,
+        bezorgwijze: _coBezorgwijze || 'afhaal',
+        klant_id: geselecteerdeKlant ? geselecteerdeKlant.id : null,
+        regels: cart.map(r => ({ product_id: r.product.id, naam: r.product.naam, aantal: r.aantal, prijs_per_stuk: parseFloat(r.product.prijs || 0) }))
+      })
+    }).catch(() => {});
+    betaalSluit();
+    toonSucces(wisselgeld);
+  }
+
+  function toonSucces(wisselgeld) {
+    const ov = document.getElementById('succes-overlay');
+    const wEl = document.getElementById('succes-wisselgeld');
+    wEl.style.display = wisselgeld > 0.005 ? '' : 'none';
+    wEl.textContent = 'Wisselgeld: € ' + wisselgeld.toFixed(2).replace('.', ',');
+    const sub = document.getElementById('succes-sub');
+    if (betaalModus === 'pin') { sub.style.display = ''; sub.textContent = 'PIN — wacht op bevestiging terminal'; }
+    else sub.style.display = 'none';
+    ov.style.display = 'flex';
+    setTimeout(() => { if (ov.style.display === 'flex') succesTerug(); }, 5000);
+  }
+
+  function succesTerug() {
+    cart = []; renderCart();
+    document.getElementById('succes-overlay').style.display = 'none';
+    document.getElementById('zoek-input').focus();
+  }
+
+  // ============================================================
+  // KLANT SELECTIE
+  // ============================================================
+  let _klantZoekTimer = null;
+
+  async function klantOverlayOpen() {
+    const ov = document.getElementById('klant-overlay');
+    ov.style.display = 'flex';
+    document.getElementById('klant-zoek').value = '';
+    document.getElementById('klant-resultaten').style.display = 'none';
+    document.getElementById('klant-top-label').style.display = 'block';
+    document.getElementById('klant-tegels').style.display = 'flex';
+    await klantLaadTop20();
+    setTimeout(() => document.getElementById('klant-zoek').focus(), 80);
+  }
+
+  function klantOverlaySluit() {
+    document.getElementById('klant-overlay').style.display = 'none';
+  }
+
+  async function klantLaadTop20() {
+    const el = document.getElementById('klant-tegels');
+    el.innerHTML = '<div style="color:#445;font-size:.85rem;padding:8px 0">Laden…</div>';
+    const klanten = await fetch('/api/kassa/klanten').then(r => r.json()).catch(() => []);
+    if (!klanten.length) { el.innerHTML = '<div style="color:#445;font-size:.85rem;padding:8px 0">Geen klanten.</div>'; return; }
+    el.innerHTML = klanten.map(k => {
+      const naam = [k.voornaam, k.achternaam].filter(Boolean).join(' ') || 'Naamloos';
+      const sub = [k.woonplaats, k.email].filter(Boolean).join(' · ');
+      const korting = k.kortingsklant ? '<span class="klant-korting-badge">Korting</span>' : '';
+      return `<button class="klant-tegel" onclick="klantSelecteer(${k.id},'${escAttr(naam)}',${k.kortingsklant?1:0})">
+        <span class="klant-tegel-naam">${escHtml(naam)} ${korting}</span>
+        ${sub ? `<span class="klant-tegel-sub">${escHtml(sub)}</span>` : ''}
+      </button>`;
+    }).join('');
+  }
+
+  function klantZoek(q) {
+    clearTimeout(_klantZoekTimer);
+    const tegels = document.getElementById('klant-tegels');
+    const topLabel = document.getElementById('klant-top-label');
+    const resultaten = document.getElementById('klant-resultaten');
+    if (!q.trim()) {
+      topLabel.style.display = 'block'; tegels.style.display = 'flex'; resultaten.style.display = 'none';
+      return;
+    }
+    topLabel.style.display = 'none'; tegels.style.display = 'none'; resultaten.style.display = 'block';
+    document.getElementById('klant-resultaten-lijst').innerHTML = '<div style="color:#445;font-size:.85rem;padding:8px 0">Zoeken…</div>';
+    _klantZoekTimer = setTimeout(async () => {
+      const klanten = await fetch('/api/kassa/klanten?q=' + encodeURIComponent(q)).then(r => r.json()).catch(() => []);
+      const el = document.getElementById('klant-resultaten-lijst');
+      if (!klanten.length) { el.innerHTML = '<div style="color:#445;font-size:.85rem;padding:8px 0">Geen klanten gevonden.</div>'; return; }
+      el.innerHTML = klanten.map(k => {
+        const naam = [k.voornaam, k.achternaam].filter(Boolean).join(' ') || 'Naamloos';
+        const korting = k.kortingsklant ? '<span class="klant-korting-badge">Korting</span>' : '';
+        const details = [k.email, k.telefoon, [k.postcode, k.woonplaats].filter(Boolean).join(' ')].filter(Boolean).join(' · ');
+        return `<div class="klant-rij" onclick="klantSelecteer(${k.id},'${escAttr(naam)}',${k.kortingsklant?1:0})">
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:.9rem;color:#e0e0e0">${escHtml(naam)} ${korting}</div>
+            <div style="font-size:.76rem;color:#556;margin-top:2px">${escHtml(details)||'–'}</div>
+          </div>
+          <span style="color:#334;font-size:1.1rem">→</span>
+        </div>`;
+      }).join('');
+    }, 280);
+  }
+
+  function klantSelecteer(id, naam, kortingsklant) {
+    geselecteerdeKlant = { id, naam, kortingsklant };
+    klantOverlaySluit();
+    document.getElementById('klant-badge-naam').textContent = naam;
+    document.getElementById('klant-badge-korting').style.display = kortingsklant ? 'inline' : 'none';
+    document.getElementById('klant-badge').style.display = 'flex';
+    document.getElementById('klant-selecteer-btn').style.display = 'none';
+  }
+
+  function klantDeselecteer() {
+    geselecteerdeKlant = null;
+    document.getElementById('klant-badge').style.display = 'none';
+    document.getElementById('klant-selecteer-btn').style.display = '';
+  }
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  function escHtml(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function escAttr(s) { return String(s ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+  // ============================================================
+  // START
+  // ============================================================
+  init();
+</script>
+</body>
+</html>

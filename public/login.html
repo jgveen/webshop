@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inloggen - Houthandel Veenstra</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --oranje: #e07b2a;
+      --oranje-hover: #c4641a;
+      --donker: #2c2017;
+    }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .zij-paneel {
+      background:
+        linear-gradient(160deg, rgba(20,10,4,0.80) 0%, rgba(44,32,23,0.72) 100%),
+        repeating-linear-gradient(93deg, transparent 0px, transparent 58px, rgba(180,100,20,0.06) 58px, rgba(180,100,20,0.06) 59px),
+        linear-gradient(170deg, #5c2e08 0%, #8b4a18 30%, #4a2508 60%, #2c1a08 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 56px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .zij-paneel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 55% at 50% 42%, rgba(224,123,42,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .zij-logo { font-size: 1.9rem; font-weight: 800; letter-spacing: -.3px; margin-bottom: 12px; position: relative; }
+    .zij-logo span { color: var(--oranje); }
+    .zij-tagline { font-size: 1.05rem; color: rgba(255,255,255,0.55); max-width: 340px; line-height: 1.7; text-align: center; position: relative; }
+    .zij-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(224,123,42,0.15); border: 1px solid rgba(224,123,42,0.35);
+      color: #f5b87a; border-radius: 999px; padding: 6px 20px;
+      font-size: .72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 24px; position: relative;
+    }
+    .zij-usps { list-style: none; margin-top: 36px; display: flex; flex-direction: column; gap: 14px; position: relative; width: 100%; max-width: 300px; }
+    .zij-usps li { display: flex; align-items: center; gap: 12px; font-size: .88rem; color: rgba(255,255,255,0.65); }
+    .zij-usps li span:first-child { font-size: 1.1rem; flex-shrink: 0; }
+    .formulier-paneel {
+      background: #f0ece7;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 60px 56px;
+    }
+    .formulier-inner { width: 100%; max-width: 400px; }
+    .form-kop { margin-bottom: 32px; }
+    .form-kop h1 { font-size: 1.6rem; font-weight: 800; color: var(--donker); margin-bottom: 6px; }
+    .form-kop p { font-size: .9rem; color: #888; }
+    .form-group { margin-bottom: 18px; }
+    label { display: block; font-size: .8rem; font-weight: 700; color: #555; margin-bottom: 6px; letter-spacing: .2px; }
+    input[type="email"], input[type="password"] {
+      width: 100%; padding: 11px 14px; border: 1.5px solid #ddd; border-radius: 8px;
+      font-size: .95rem; font-family: inherit; background: #fff;
+      transition: border-color .15s, box-shadow .15s; color: #222;
+    }
+    input:focus { outline: none; border-color: var(--oranje); box-shadow: 0 0 0 3px rgba(224,123,42,0.12); }
+    .btn-submit {
+      width: 100%; padding: 12px; background: var(--oranje); color: #fff;
+      border: none; border-radius: 8px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; transition: background .15s, transform .1s; margin-top: 4px;
+    }
+    .btn-submit:hover { background: var(--oranje-hover); transform: translateY(-1px); }
+    .btn-submit:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+    .fout-melding {
+      background: #fdecea; color: #c0392b; border: 1px solid #f5c6cb;
+      border-radius: 7px; padding: 10px 14px; font-size: .86rem; margin-bottom: 14px; display: none;
+    }
+    .scheidslijn { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: #ccc; font-size: .78rem; }
+    .scheidslijn::before, .scheidslijn::after { content: ""; flex: 1; border-top: 1px solid #e0dbd5; }
+    .form-links { text-align: center; font-size: .86rem; color: #999; display: flex; flex-direction: column; gap: 8px; }
+    .form-links a { color: var(--oranje); text-decoration: none; font-weight: 600; }
+    .form-links a:hover { text-decoration: underline; }
+    @media (max-width: 700px) {
+      body { grid-template-columns: 1fr; }
+      .zij-paneel { display: none; }
+      .formulier-paneel { padding: 40px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="zij-paneel">
+    <div class="zij-badge">&#127795; Houthandel Veenstra</div>
+    <div class="zij-logo">Houthandel <span>Veenstra</span></div>
+    <div class="zij-tagline">Uw specialist in hout &amp; bouwmaterialen. Van vuren constructiehout tot hardhout en ge&iuml;mpregneerd hout.</div>
+    <ul class="zij-usps">
+      <li><span>&#10003;</span><span>Gratis account aanmaken</span></li>
+      <li><span>&#10003;</span><span>Snel inzicht in ons assortiment</span></li>
+      <li><span>&#10003;</span><span>Direct contact via WhatsApp</span></li>
+    </ul>
+  </div>
+
+  <div class="formulier-paneel">
+    <div class="formulier-inner">
+      <div class="form-kop">
+        <h1>Welkom terug</h1>
+        <p>Log in op je account bij Houthandel Veenstra</p>
+      </div>
+      <div class="fout-melding" id="fout"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">E-mailadres</label>
+          <input type="email" id="email" autocomplete="email" placeholder="jouw@email.nl" required />
+        </div>
+        <div class="form-group">
+          <label for="wachtwoord">Wachtwoord</label>
+          <input type="password" id="wachtwoord" autocomplete="current-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" required />
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <input type="checkbox" id="onthoud" style="width:16px;height:16px;accent-color:var(--oranje);cursor:pointer;flex-shrink:0" />
+          <label for="onthoud" style="margin:0;font-size:.85rem;font-weight:500;cursor:pointer;letter-spacing:0">Blijf ingelogd op dit apparaat</label>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Inloggen</button>
+      </form>
+      <div class="scheidslijn">of</div>
+      <div class="form-links">
+        <span>Nog geen account? <a href="/registreren.html">Maak er gratis een aan</a></span>
+        <a href="/">&#8592; Terug naar de winkel</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fout = document.getElementById("fout");
+      const btn  = document.getElementById("submit-btn");
+      fout.style.display = "none";
+      btn.disabled = true;
+      btn.textContent = "Even geduld…";
+
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email:      document.getElementById("email").value,
+          wachtwoord: document.getElementById("wachtwoord").value,
+          onthouMe:   document.getElementById("onthoud").checked
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = data.redirect;
+      } else {
+        fout.textContent = data.error;
+        fout.style.display = "block";
+        btn.disabled = false;
+        btn.textContent = "Inloggen";
+      }
+    });
+  </script>
+</body>
+</html>

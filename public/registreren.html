@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account aanmaken – Houthandel Veenstra</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --oranje: #e07b2a;
+      --oranje-hover: #c4641a;
+      --donker: #2c2017;
+      --bruin: #5c3317;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0ece7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--donker);
+      color: #fff;
+      padding: 0 40px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-logo { font-size: 1.2rem; font-weight: 800; cursor: pointer; text-decoration: none; color: #fff; }
+    .header-logo span { color: var(--oranje); }
+    header a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: .9rem; }
+    header a:hover { color: #fff; }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 20px;
+    }
+    .kaart {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 480px;
+      padding: 40px;
+    }
+    .kaart-logo {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--donker);
+      margin-bottom: 6px;
+    }
+    .kaart-logo span { color: var(--oranje); }
+    .kaart-sub {
+      text-align: center;
+      color: #888;
+      font-size: .9rem;
+      margin-bottom: 30px;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: .82rem; font-weight: 700; color: #444; margin-bottom: 5px; }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      font-size: .95rem;
+      font-family: inherit;
+      transition: border-color .15s;
+    }
+    input:focus { outline: none; border-color: var(--oranje); }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--oranje);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 6px;
+      transition: background .15s;
+    }
+    .btn:hover { background: var(--oranje-hover); }
+    .btn:disabled { background: #ccc; cursor: not-allowed; }
+    .melding {
+      padding: 10px 14px;
+      border-radius: 7px;
+      font-size: .88rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+    .melding.fout { background: #fdecea; color: #c0392b; border: 1px solid #f5c6cb; }
+    .melding.ok { background: #eafaf1; color: #1e8449; border: 1px solid #a9dfbf; }
+    .links {
+      text-align: center;
+      margin-top: 22px;
+      font-size: .88rem;
+      color: #888;
+    }
+    .links a { color: var(--oranje); text-decoration: none; font-weight: 600; }
+    .links a:hover { text-decoration: underline; }
+    .scheidslijn {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 24px 0;
+    }
+    .sectie-label {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #bbb;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="header-logo">Houthandel <span>Veenstra</span></a>
+    <a href="/login.html">Inloggen →</a>
+  </header>
+  <main>
+    <div class="kaart">
+      <div class="kaart-logo">Houthandel <span>Veenstra</span></div>
+      <div class="kaart-sub">Maak een gratis account aan</div>
+
+      <div class="melding" id="melding"></div>
+
+      <form id="regForm" autocomplete="on">
+        <div class="sectie-label">Persoonlijke gegevens</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="voornaam">Voornaam *</label>
+            <input type="text" id="voornaam" autocomplete="given-name" placeholder="Jan" required />
+          </div>
+          <div class="form-group">
+            <label for="achternaam">Achternaam</label>
+            <input type="text" id="achternaam" autocomplete="family-name" placeholder="de Vries" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">E-mailadres *</label>
+          <input type="email" id="email" autocomplete="email" placeholder="jouw@email.nl" required />
+        </div>
+
+        <hr class="scheidslijn" />
+        <div class="sectie-label">Wachtwoord</div>
+
+        <div class="form-group">
+          <label for="wachtwoord">Wachtwoord * <span style="font-weight:400;color:#aaa">(minimaal 8 tekens)</span></label>
+          <input type="password" id="wachtwoord" autocomplete="new-password" placeholder="••••••••" required minlength="8" />
+        </div>
+        <div class="form-group">
+          <label for="herhaal">Wachtwoord herhalen *</label>
+          <input type="password" id="herhaal" autocomplete="new-password" placeholder="••••••••" required minlength="8" />
+        </div>
+
+        <button type="submit" class="btn" id="submit-btn">Account aanmaken</button>
+      </form>
+
+      <div class="links">
+        Al een account? <a href="/login.html">Inloggen</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('regForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mel = document.getElementById('melding');
+      mel.style.display = 'none';
+
+      const voornaam   = document.getElementById('voornaam').value.trim();
+      const achternaam = document.getElementById('achternaam').value.trim();
+      const email      = document.getElementById('email').value.trim();
+      const wachtwoord = document.getElementById('wachtwoord').value;
+      const herhaal    = document.getElementById('herhaal').value;
+
+      if (wachtwoord !== herhaal) {
+        mel.className = 'melding fout';
+        mel.textContent = 'Wachtwoorden komen niet overeen.';
+        mel.style.display = 'block';
+        return;
+      }
+
+      const btn = document.getElementById('submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Even geduld…';
+
+      const res = await fetch('/api/registreren', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ voornaam, achternaam, email, wachtwoord })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        mel.className = 'melding ok';
+        mel.textContent = '✓ Account aangemaakt! Je wordt doorgestuurd…';
+        mel.style.display = 'block';
+        // Automatisch inloggen
+        const lr = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, wachtwoord })
+        });
+        const ld = await lr.json();
+        setTimeout(() => { window.location.href = lr.ok ? ld.redirect : '/login.html'; }, 1200);
+      } else {
+        mel.className = 'melding fout';
+        mel.textContent = data.error || 'Er is iets misgegaan.';
+        mel.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Account aanmaken';
+      }
+    });
+  </script>
+</body>
+</html>

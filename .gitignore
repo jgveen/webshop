@@ -1,1 +1,10 @@
 node_modules/
+.env
+*.log
+
+# Geüploade bestanden (te groot voor git, blijven op server)
+public/slider/
+public/slider_backup/
+public/producten/
+public/werkzaamheden/
+public/services/

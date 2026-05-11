@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backend Login - Webshop</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a2e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .login-box {
+      background: #fff;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 400px;
+    }
+    h1 { text-align: center; margin-bottom: 6px; color: #222; }
+    .subtitle { text-align: center; color: #777; margin-bottom: 30px; font-size: 0.95rem; }
+    .badge {
+      display: inline-block; background-color: #1a1a2e; color: #fff;
+      font-size: 0.75rem; padding: 3px 10px; border-radius: 20px;
+      margin: 0 auto 20px; display: block; width: fit-content;
+    }
+    label { display: block; margin-bottom: 6px; font-weight: bold; color: #333; }
+    input {
+      width: 100%; padding: 12px; border: 1px solid #ddd;
+      border-radius: 5px; font-size: 1rem; margin-bottom: 20px;
+    }
+    input:focus { outline: none; border-color: #1a1a2e; }
+    button {
+      width: 100%; padding: 12px; background-color: #1a1a2e;
+      color: #fff; border: none; border-radius: 5px;
+      font-size: 1rem; cursor: pointer; font-weight: bold;
+    }
+    button:hover { background-color: #16213e; }
+    .fout { color: red; text-align: center; margin-top: 15px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h1>Backend</h1>
+    <span class="badge">Medewerkers & Admins</span>
+    <form id="loginForm">
+      <label for="email">E-mailadres</label>
+      <input type="email" id="email" placeholder="jouw@email.nl" required />
+      <label for="wachtwoord">Wachtwoord</label>
+      <input type="password" id="wachtwoord" placeholder="••••••••" required />
+      <button type="submit">Inloggen</button>
+    </form>
+    <p class="fout" id="fout"></p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const wachtwoord = document.getElementById('wachtwoord').value;
+      const fout = document.getElementById('fout');
+      fout.style.display = 'none';
+
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, wachtwoord })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        window.location.href = data.redirect;
+      } else {
+        fout.textContent = data.error;
+        fout.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

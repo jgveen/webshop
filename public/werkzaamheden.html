@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Werkzaamheden – Houthandel Veenstra</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --oranje: #e07b2a;
+      --oranje-hover: #c4641a;
+      --oranje-licht: #f5e6d6;
+      --bruin: #5c3317;
+      --bruin-mid: #8b5e3c;
+      --donker: #2c2017;
+      --grijs: #6b6b6b;
+      --grijs-licht: #f0ece7;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--grijs-licht);
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* NOTIFICATIEBALK */
+    #notificatie-balk {
+      display: none;
+      background: var(--oranje);
+      color: #fff;
+      font-size: .88rem;
+      font-weight: 600;
+      text-align: center;
+      padding: 9px 48px;
+      z-index: 110;
+      position: relative;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+    #notificatie-balk a { color: #fff; text-decoration: underline; margin-left: 12px; font-size: .8rem; opacity: .8; cursor: pointer; }
+
+    /* HEADER */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(44,32,23,0.97);
+      backdrop-filter: blur(8px);
+      color: #fff;
+      padding: 0 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      flex-shrink: 0;
+    }
+    .header-logo { font-size: 1.3rem; font-weight: 800; letter-spacing: .3px; cursor: pointer; user-select: none; }
+    .header-logo span { color: var(--oranje); }
+    header nav { display: flex; align-items: center; background: rgba(255,255,255,0.09); border-radius: 999px; padding: 5px 6px; gap: 2px; }
+    header nav a { color: rgba(255,255,255,0.75); text-decoration: none; font-size: .88rem; padding: 6px 16px; border-radius: 999px; transition: background .15s, color .15s; white-space: nowrap; }
+    header nav a:hover { background: rgba(255,255,255,0.12); color: #fff; }
+    header nav a.actief { background: rgba(255,255,255,0.18); color: #fff; font-weight: 700; }
+    .btn-login { background: var(--oranje) !important; color: #fff !important; padding: 6px 18px; border-radius: 999px; font-weight: 700; font-size: .88rem; }
+    .btn-login:hover { background: var(--oranje-hover) !important; }
+    .header-account { display: contents; }
+    .header-avatar { width: 32px; height: 32px; background: var(--oranje); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .88rem; flex-shrink: 0; text-decoration: none; }
+    .header-avatar:hover { background: var(--oranje-hover); }
+
+    /* ZOEKBALK */
+    #site-zoekbalk { background: var(--donker); padding: 10px 48px; display: flex; justify-content: center; flex-shrink: 0; border-bottom: 2px solid var(--bruin); }
+    .site-zoek-inner { display: flex; width: 100%; max-width: 640px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; overflow: hidden; transition: border-color .15s; }
+    .site-zoek-inner:focus-within { border-color: var(--oranje); background: rgba(255,255,255,0.15); }
+    #site-zoek-input { flex: 1; background: transparent; border: none; outline: none; color: #fff; font-size: .95rem; font-family: inherit; padding: 9px 16px; }
+    #site-zoek-input::placeholder { color: rgba(255,255,255,0.45); }
+    #site-zoek-btn { background: var(--oranje); border: none; color: #fff; padding: 0 18px; cursor: pointer; font-size: 1rem; transition: background .15s; }
+    #site-zoek-btn:hover { background: var(--oranje-hover); }
+
+    /* WINKELMANDJE BADGE */
+    .wm-btn { position: relative; background: rgba(255,255,255,0.12); border: none; border-radius: 999px; color: rgba(255,255,255,0.85); font-size: .88rem; font-weight: 600; padding: 6px 16px; cursor: pointer; display: flex; align-items: center; gap: 7px; transition: background .15s, color .15s; font-family: inherit; }
+    .wm-btn:hover { background: rgba(255,255,255,0.22); color: #fff; }
+    .wm-badge { background: var(--oranje); color: #fff; border-radius: 999px; font-size: .68rem; font-weight: 800; min-width: 18px; height: 18px; display: none; align-items: center; justify-content: center; padding: 0 4px; }
+
+    /* PAGINA LAYOUT */
+    .pagina-wrapper { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+    .pagina-hoofd { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+    /* SIDEBAR */
+    .cat-sidebar { width: 260px; flex-shrink: 0; background: #fff; border-right: 1px solid #ddd6cc; display: flex; flex-direction: column; overflow: hidden; }
+    .cat-sidebar-titel { padding: 16px 20px 12px; font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--bruin-mid); border-bottom: 1px solid #ece5dc; flex-shrink: 0; background: var(--oranje-licht); }
+    .cat-lijst { flex: 1; overflow-y: auto; padding: 6px 0; }
+    .cat-lijst::-webkit-scrollbar { width: 4px; }
+    .cat-lijst::-webkit-scrollbar-track { background: transparent; }
+    .cat-lijst::-webkit-scrollbar-thumb { background: #ddd; border-radius: 4px; }
+    .cat-item { display: flex; align-items: center; gap: 12px; padding: 8px 16px; min-height: 54px; cursor: pointer; transition: background .12s; border-left: 3px solid transparent; color: #333; }
+    .cat-item:hover { background: #f7f7f7; }
+    .cat-item.actief { background: var(--oranje-licht); border-left-color: var(--oranje); color: var(--donker); font-weight: 600; }
+    .cat-thumb { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; background: #eee; flex-shrink: 0; }
+    .cat-thumb-icon { width: 36px; height: 36px; border-radius: 6px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .cat-naam { flex: 1; font-size: .93rem; line-height: 1.3; word-break: break-word; }
+    .cat-pijl { color: #ccc; font-size: .9rem; transition: transform .2s; flex-shrink: 0; }
+    .cat-item.open .cat-pijl { transform: rotate(90deg); }
+    .cat-sub { overflow: hidden; }
+    .cat-item.lvl2 { padding-left: 28px; min-height: 44px; padding-top: 6px; padding-bottom: 6px; background: #f7f0e8; }
+    .cat-item.lvl2 .cat-thumb, .cat-item.lvl2 .cat-thumb-icon { width: 28px; height: 28px; font-size: 1rem; }
+    .cat-item.lvl2 .cat-naam { font-size: .88rem; }
+    .cat-item.lvl3 { padding-left: 52px; min-height: 38px; padding-top: 5px; padding-bottom: 5px; background: #f0e8dd; }
+    .cat-item.lvl3 .cat-thumb, .cat-item.lvl3 .cat-thumb-icon { width: 24px; height: 24px; font-size: .85rem; }
+    .cat-item.lvl3 .cat-naam { font-size: .85rem; color: var(--grijs); }
+    .laden { color: #aaa; padding: 40px; text-align: center; }
+
+    /* WERKZAAMHEDEN */
+    .wz-banner { background: linear-gradient(135deg, var(--donker) 0%, #3d2a18 100%); color: #fff; padding: 28px 40px 24px; flex-shrink: 0; text-align: center; }
+    .wz-banner h1 { font-size: 1.9rem; font-weight: 900; letter-spacing: -.3px; margin-bottom: 6px; }
+    .wz-banner h1 span { color: var(--oranje); }
+    .wz-banner p { font-size: .9rem; color: rgba(255,255,255,0.55); margin: 0; }
+    .wz-hoofd { flex: 1; padding: 32px 28px 48px; }
+    .wz-kaart { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,.08); overflow: hidden; display: flex; flex-direction: column; transition: box-shadow .18s, transform .18s; }
+    .wz-kaart:hover { box-shadow: 0 8px 28px rgba(0,0,0,.13); transform: translateY(-3px); }
+
+    /* FOOTER */
+    .site-footer { background: var(--donker); color: rgba(255,255,255,0.6); font-size: .82rem; padding: 12px 40px; display: flex; align-items: center; gap: 32px; flex-shrink: 0; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.07); }
+    .footer-label { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--oranje); font-weight: 700; margin-right: 4px; white-space: nowrap; }
+    .footer-tijden { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; flex: 1; }
+    .footer-tijd-item { display: flex; gap: 6px; white-space: nowrap; }
+    .footer-tijd-item span:first-child { color: rgba(255,255,255,0.35); }
+    .footer-copy { margin-left: auto; white-space: nowrap; color: rgba(255,255,255,0.25); }
+  </style>
+</head>
+<body>
+
+  <!-- NOTIFICATIEBALK -->
+  <div id="notificatie-balk"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-logo" onclick="location.href='/'">
+      Houthandel <span>Veenstra</span>
+    </div>
+    <nav>
+      <a href="/">Assortiment</a>
+      <a href="/werkzaamheden.html" class="actief">Werkzaamheden</a>
+      <a href="/" onclick="window.location.href='/?contact=1';return false;">Contact</a>
+      <button class="wm-btn" onclick="location.href='/'" title="Winkelmandje">
+        &#128722; Mandje
+        <span class="wm-badge" id="wm-badge">0</span>
+      </button>
+      <div class="header-account" id="header-account">
+        <a href="/login.html" class="btn-login" id="nav-inloggen">Inloggen</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ZOEKBALK -->
+  <div id="site-zoekbalk">
+    <div class="site-zoek-inner">
+      <input id="site-zoek-input" type="text" placeholder="&#128269; Zoek op product, afmeting, artikelcode&#8230;" autocomplete="off"
+        onkeydown="if(event.key==='Enter')siteZoek()" />
+      <button id="site-zoek-btn" onclick="siteZoek()" title="Zoeken">&#128269;</button>
+    </div>
+  </div>
+
+  <!-- PAGINA -->
+  <div class="pagina-wrapper">
+
+    <!-- SIDEBAR -->
+    <aside class="cat-sidebar">
+      <div class="cat-sidebar-titel">Categorie&euml;n</div>
+      <div class="cat-lijst" id="cat-lijst">
+        <div class="laden">Laden&hellip;</div>
+      </div>
+    </aside>
+
+    <!-- HOOFD -->
+    <div class="pagina-hoofd">
+
+      <!-- BANNER -->
+      <div class="wz-banner">
+        <h1>Onze <span>werkzaamheden</span></h1>
+        <p>Een kijk in de projecten die wij voor onze klanten uitvoeren.</p>
+      </div>
+
+      <!-- WERKZAAMHEDEN GRID -->
+      <div class="wz-hoofd">
+        <div id="wz-laden" style="text-align:center;padding:60px;color:#aaa;font-size:.95rem">Laden&#8230;</div>
+        <div id="wz-leeg" style="display:none;text-align:center;padding:60px;color:#aaa">
+          <div style="font-size:3rem;margin-bottom:16px">&#128296;</div>
+          <p style="font-size:1rem">Binnenkort meer informatie over onze werkzaamheden.</p>
+        </div>
+        <div id="wz-grid" style="display:none;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:24px"></div>
+      </div>
+
+      <!-- FOOTER -->
+      <footer class="site-footer">
+        <span class="footer-label">Openingstijden</span>
+        <div class="footer-tijden" id="footer-tijden"><span style="color:rgba(255,255,255,0.3)">Laden&#8230;</span></div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap">
+          <a href="/" style="color:rgba(255,255,255,0.6);font-size:.82rem;text-decoration:none">Webshop</a>
+          <a href="/werkzaamheden.html" style="color:rgba(255,255,255,0.85);font-size:.82rem;text-decoration:none;font-weight:600">Werkzaamheden</a>
+          <a href="/service.html" style="color:rgba(255,255,255,0.6);font-size:.82rem;text-decoration:none">Service</a>
+        </div>
+        <span class="footer-copy">&copy; <span id="footer-jaar"></span> <span id="footer-bedrijf">Houthandel Veenstra</span></span>
+      </footer>
+
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('footer-jaar').textContent = new Date().getFullYear();
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ZOEKEN: doorsturen naar hoofdpagina */
+    function siteZoek() {
+      const q = document.getElementById('site-zoek-input').value.trim();
+      window.location.href = q ? '/?zoek=' + encodeURIComponent(q) : '/';
+    }
+
+    /* WINKELMANDJE BADGE */
+    function wmUpdateBadge() {
+      try {
+        const items = JSON.parse(localStorage.getItem('winkelmandje') || '[]');
+        const totaal = items.reduce((s, i) => s + i.aantal, 0);
+        const badge = document.getElementById('wm-badge');
+        badge.textContent = totaal;
+        badge.style.display = totaal > 0 ? 'flex' : 'none';
+      } catch(e) {}
+    }
+    wmUpdateBadge();
+
+    /* HEADER ACCOUNT */
+    async function laadAccount() {
+      try {
+        const r = await fetch('/api/gebruiker', { credentials: 'include' });
+        if (!r.ok) return;
+        const g = await r.json();
+        if (!g || !g.naam) return;
+        const initials = g.naam.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+        const container = document.getElementById('header-account');
+        const href = g.rol === 'admin' ? '/backend/admin.html' : '#';
+        container.innerHTML = `<a href="${href}" class="header-avatar" title="${escHtml(g.naam)}">${escHtml(initials)}</a>`;
+      } catch(e) {}
+    }
+    laadAccount();
+
+    /* NOTIFICATIEBALK */
+    async function laadNotificatie() {
+      try {
+        const data = await fetch('/api/instellingen').then(r => r.json());
+        const balk = document.getElementById('notificatie-balk');
+        if (data.notificatie_balk_tekst && data.notificatie_balk_zichtbaar) {
+          balk.innerHTML = data.notificatie_balk_tekst;
+          balk.style.display = 'block';
+        }
+      } catch(e) {}
+    }
+
+    /* FOOTER */
+    async function laadFooter() {
+      try {
+        const data = await fetch('/api/instellingen').then(r => r.json());
+        if (data.bedrijf_naam) document.getElementById('footer-bedrijf').textContent = data.bedrijf_naam;
+        const tijden = document.getElementById('footer-tijden');
+        if (data.openingstijden && Array.isArray(data.openingstijden) && data.openingstijden.length) {
+          tijden.innerHTML = data.openingstijden.map(t =>
+            `<div class="footer-tijd-item"><span>${escHtml(t.dag || '')}</span><span>${escHtml(t.tijden || '')}</span></div>`
+          ).join('');
+        } else {
+          tijden.innerHTML = '';
+        }
+      } catch(e) {
+        document.getElementById('footer-tijden').innerHTML = '';
+      }
+    }
+
+    /* Beide tegelijk laden (gebruik dezelfde /api/instellingen response) */
+    async function laadInstellingen() {
+      try {
+        const data = await fetch('/api/instellingen').then(r => r.json());
+        if (data.bedrijf_naam) document.getElementById('footer-bedrijf').textContent = data.bedrijf_naam;
+        const tijden = document.getElementById('footer-tijden');
+        if (data.openingstijden && Array.isArray(data.openingstijden) && data.openingstijden.length) {
+          tijden.innerHTML = data.openingstijden.map(t =>
+            `<div class="footer-tijd-item"><span>${escHtml(t.dag || '')}</span><span>${escHtml(t.tijden || '')}</span></div>`
+          ).join('');
+        } else {
+          tijden.innerHTML = '';
+        }
+        const balk = document.getElementById('notificatie-balk');
+        if (data.notificatie_balk_tekst && data.notificatie_balk_zichtbaar) {
+          balk.innerHTML = data.notificatie_balk_tekst;
+          balk.style.display = 'block';
+        }
+      } catch(e) {
+        document.getElementById('footer-tijden').innerHTML = '';
+      }
+    }
+    laadInstellingen();
+
+    /* SIDEBAR CATEGORIEEN */
+    const catCache = {};
+
+    function thumbHtml(id, cls) {
+      return `<img class="cat-thumb ${cls}" src="/api/groepen/${id}/afbeelding" alt=""
+        onerror="this.outerHTML='<div class=\\'cat-thumb-icon ${cls}\\'>&#128194;</div>'" />`;
+    }
+
+    function itemHtml(g, niveau) {
+      const lvl = niveau === 2 ? 'lvl2' : niveau === 3 ? 'lvl3' : '';
+      const pijl = g.heeft_kinderen ? '<span class="cat-pijl">&#8250;</span>' : '';
+      return `<div class="cat-item ${lvl}" data-id="${g.id}"
+        onclick="catKlik(${g.id})">
+        ${thumbHtml(g.id, lvl)}
+        <span class="cat-naam">${escHtml(g.naam)}</span>${pijl}
+      </div>`;
+    }
+
+    async function haalGroepen(parentId) {
+      const key = parentId === null ? 'null' : parentId;
+      if (catCache[key]) return catCache[key];
+      try {
+        const data = await fetch('/api/groepen?parent_id=' + key).then(r => r.json());
+        catCache[key] = Array.isArray(data) ? data : [];
+      } catch(e) { catCache[key] = []; }
+      return catCache[key];
+    }
+
+    async function laadSidebar() {
+      const lijst = document.getElementById('cat-lijst');
+      const groepen = await haalGroepen(null);
+      if (!groepen.length) { lijst.innerHTML = '<div class="laden">Geen categorie&euml;n</div>'; return; }
+      lijst.innerHTML = groepen.map(g => itemHtml(g, 1)).join('');
+    }
+
+    function catKlik(id) {
+      window.location.href = '/?cat=' + id;
+    }
+
+    laadSidebar();
+
+    /* WERKZAAMHEDEN */
+    async function laadWerkzaamheden() {
+      const data = await fetch('/api/werkzaamheden').then(r => r.json()).catch(() => []);
+      document.getElementById('wz-laden').style.display = 'none';
+      if (!data.length) {
+        document.getElementById('wz-leeg').style.display = 'block';
+        return;
+      }
+      const grid = document.getElementById('wz-grid');
+      grid.style.display = 'grid';
+      grid.innerHTML = data.map(w => `
+        <div class="wz-kaart">
+          <div style="width:100%;aspect-ratio:4/3;background:#f0ebe5;overflow:hidden;flex-shrink:0">
+            ${w.afbeelding
+              ? `<img src="${escHtml(w.afbeelding)}" alt="${escHtml(w.titel)}" loading="lazy" style="width:100%;height:100%;object-fit:cover" />`
+              : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:3rem;color:#ccc">&#128296;</div>`}
+          </div>
+          <div style="padding:16px 18px 20px;flex:1;display:flex;flex-direction:column">
+            <div style="font-weight:900;font-size:1rem;color:#2c2017;line-height:1.3;margin-bottom:8px">${escHtml(w.titel)}</div>
+            ${w.tekst ? `<div style="font-size:.88rem;color:#666;line-height:1.6;flex:1">${escHtml(w.tekst).replace(/\n/g,'<br>')}</div>` : ''}
+          </div>
+        </div>`).join('');
+    }
+
+    laadWerkzaamheden();
+  </script>
+</body>
+</html>

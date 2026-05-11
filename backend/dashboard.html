@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Webshop Backend</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #f0f2f5; }
+    header {
+      background-color: #1a1a2e; color: #fff;
+      padding: 16px 30px; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    header h1 { font-size: 1.3rem; }
+    .header-right { display: flex; align-items: center; gap: 15px; }
+    .header-right span { font-size: 0.9rem; opacity: 0.8; }
+    .badge {
+      background-color: #4a90d9; color: #fff;
+      padding: 3px 10px; border-radius: 20px; font-size: 0.8rem;
+    }
+    .badge.admin { background-color: #e74c3c; }
+    button.logout {
+      background: transparent; border: 1px solid #fff;
+      color: #fff; padding: 6px 14px; border-radius: 5px;
+      cursor: pointer; font-size: 0.85rem;
+    }
+    button.logout:hover { background: rgba(255,255,255,0.15); }
+    .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    .card {
+      background: #fff; border-radius: 10px;
+      padding: 30px; margin-bottom: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .card h2 { margin-bottom: 20px; color: #222; font-size: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    th { background-color: #f8f8f8; font-weight: bold; color: #555; font-size: 0.9rem; }
+    .btn-delete {
+      background-color: #e74c3c; color: #fff; border: none;
+      padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem;
+    }
+    .btn-delete:hover { background-color: #c0392b; }
+    .form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+    .form-row input {
+      flex: 1; padding: 10px; border: 1px solid #ddd;
+      border-radius: 5px; font-size: 0.95rem; min-width: 120px;
+    }
+    .form-row button {
+      background-color: #27ae60; color: #fff; border: none;
+      padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 0.95rem;
+    }
+    .form-row button:hover { background-color: #229954; }
+    .admin-link {
+      display: inline-block; margin-top: 10px;
+      background-color: #e74c3c; color: #fff; padding: 10px 20px;
+      border-radius: 5px; text-decoration: none; font-size: 0.95rem;
+    }
+    .admin-link:hover { background-color: #c0392b; }
+    #admin-sectie { display: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Webshop Backend</h1>
+    <div class="header-right">
+      <span id="welkom"></span>
+      <span class="badge" id="rol-badge"></span>
+      <button class="logout" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Producten beheren</h2>
+      <div class="form-row">
+        <input type="text" id="nieuw-naam" placeholder="Naam" />
+        <input type="text" id="nieuw-beschrijving" placeholder="Beschrijving" />
+        <input type="number" id="nieuw-prijs" placeholder="Prijs" step="0.01" />
+        <button onclick="productToevoegen()">+ Toevoegen</button>
+      </div>
+      <table id="producten-tabel">
+        <thead>
+          <tr><th>ID</th><th>Naam</th><th>Beschrijving</th><th>Prijs</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card" id="admin-sectie">
+      <h2>Admin beheer</h2>
+      <a class="admin-link" href="/backend/admin.html">Ga naar Admin paneel →</a>
+    </div>
+  </div>
+
+  <script>
+    async function laadSessie() {
+      const res = await fetch('/api/sessie');
+      if (!res.ok) { window.location.href = '/backend/login.html'; return; }
+      const gebruiker = await res.json();
+      document.getElementById('welkom').textContent = 'Welkom, ' + gebruiker.naam;
+      const badge = document.getElementById('rol-badge');
+      badge.textContent = gebruiker.rol;
+      if (gebruiker.rol === 'admin') {
+        badge.classList.add('admin');
+        document.getElementById('admin-sectie').style.display = 'block';
+      }
+    }
+
+    async function laadProducten() {
+      const res = await fetch('/api/producten?per_pagina=100');
+      const data = await res.json();
+      const producten = data.items || [];
+      const tbody = document.querySelector('#producten-tabel tbody');
+      tbody.innerHTML = producten.map(p => `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.naam}</td>
+          <td>${p.beschrijving}</td>
+          <td>€ ${parseFloat(p.prijs).toFixed(2).replace('.', ',')}</td>
+          <td><button class="btn-delete" onclick="verwijderProduct(${p.id})">Verwijderen</button></td>
+        </tr>
+      `).join('');
+    }
+
+    async function productToevoegen() {
+      const naam = document.getElementById('nieuw-naam').value.trim();
+      const beschrijving = document.getElementById('nieuw-beschrijving').value.trim();
+      const prijs = document.getElementById('nieuw-prijs').value;
+      if (!naam || !prijs) return alert('Naam en prijs zijn verplicht.');
+      await fetch('/api/producten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ naam, beschrijving, prijs })
+      });
+      document.getElementById('nieuw-naam').value = '';
+      document.getElementById('nieuw-beschrijving').value = '';
+      document.getElementById('nieuw-prijs').value = '';
+      laadProducten();
+    }
+
+    async function verwijderProduct(id) {
+      if (!confirm('Product verwijderen?')) return;
+      await fetch('/api/producten/' + id, { method: 'DELETE' });
+      laadProducten();
+    }
+
+    async function uitloggen() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/backend/login.html';
+    }
+
+    laadSessie();
+    laadProducten();
+  </script>
+</body>
+</html>

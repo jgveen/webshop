@@ -1,7 +1,7 @@
 {
   "name": "webshop",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,6 +10,16 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "express": "^5.2.1"
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.1",
+    "express-session": "^1.19.0",
+    "googleapis": "^171.4.0",
+    "helmet": "^8.1.0",
+    "multer": "^2.1.1",
+    "mysql2": "^3.22.3",
+    "nodemailer": "^8.0.7",
+    "ssh2": "^1.17.0"
   }
 }

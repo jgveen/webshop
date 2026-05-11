@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mijn profiel – Houthandel Veenstra</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232c2017'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='14' fill='%23e07b2a'>HV</text></svg>" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --oranje: #e07b2a;
+      --oranje-hover: #c4641a;
+      --oranje-licht: #f5e6d6;
+      --donker: #2c2017;
+      --bruin: #5c3317;
+      --bruin-mid: #8b5e3c;
+    }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f0ece7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: var(--donker);
+      color: #fff;
+      padding: 0 40px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-logo { font-size: 1.2rem; font-weight: 800; text-decoration: none; color: #fff; }
+    .header-logo span { color: var(--oranje); }
+    .header-nav { display: flex; align-items: center; gap: 20px; }
+    .header-nav a { color: rgba(255,255,255,0.65); text-decoration: none; font-size: .9rem; }
+    .header-nav a:hover { color: #fff; }
+    .header-avatar {
+      width: 34px; height: 34px;
+      background: var(--oranje);
+      color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .95rem;
+      flex-shrink: 0;
+    }
+    main {
+      flex: 1;
+      max-width: 780px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 20px 60px;
+    }
+    .pagina-titel {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--donker);
+      margin-bottom: 6px;
+    }
+    .pagina-sub { color: #888; font-size: .9rem; margin-bottom: 32px; }
+    .kaart {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.07);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .kaart-header {
+      background: var(--oranje-licht);
+      padding: 18px 28px;
+      border-bottom: 1px solid #e8d8c8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .kaart-header h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--bruin);
+    }
+    .kaart-body { padding: 28px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+    label { display: block; font-size: .8rem; font-weight: 700; color: #555; margin-bottom: 5px; }
+    input[type="text"], input[type="email"], input[type="tel"], input[type="password"] {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid #ddd;
+      border-radius: 7px;
+      font-size: .93rem;
+      font-family: inherit;
+      transition: border-color .15s;
+      background: #fff;
+    }
+    input:focus { outline: none; border-color: var(--oranje); }
+    input[readonly] { background: #f9f9f9; color: #999; cursor: not-allowed; }
+    .btn {
+      padding: 9px 22px;
+      border: none;
+      border-radius: 7px;
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background .15s;
+    }
+    .btn-primary { background: var(--oranje); color: #fff; }
+    .btn-primary:hover { background: var(--oranje-hover); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-ghost { background: #f0f0f0; color: #555; }
+    .btn-ghost:hover { background: #e4e4e4; }
+    .btn-rood { background: #e74c3c; color: #fff; }
+    .btn-rood:hover { background: #c0392b; }
+    .melding {
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-size: .85rem;
+      margin-top: 12px;
+      display: none;
+    }
+    .melding.fout { background: #fdecea; color: #c0392b; }
+    .melding.ok   { background: #eafaf1; color: #1e8449; }
+    .info-rij {
+      display: flex;
+      gap: 6px;
+      font-size: .82rem;
+      color: #999;
+      margin-top: 20px;
+    }
+    .uitloggen-balk {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="header-logo">Houthandel <span>Veenstra</span></a>
+    <div class="header-nav">
+      <a href="/">← Naar de winkel</a>
+      <div class="header-avatar" id="avatar-letter">?</div>
+    </div>
+  </header>
+
+  <main>
+    <div class="uitloggen-balk">
+      <button class="btn btn-ghost" onclick="uitloggen()">Uitloggen</button>
+    </div>
+
+    <div class="pagina-titel" id="welkom-naam">Mijn profiel</div>
+    <div class="pagina-sub" id="welkom-sub">Beheer je persoonlijke gegevens</div>
+
+    <!-- Gegevens kaart -->
+    <div class="kaart">
+      <div class="kaart-header">
+        <h2>&#128100; Persoonlijke gegevens</h2>
+      </div>
+      <div class="kaart-body">
+        <form id="profiel-form">
+          <div class="form-group">
+            <label>E-mailadres</label>
+            <input type="email" id="p-email" readonly />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Voornaam *</label>
+              <input type="text" id="p-voornaam" autocomplete="given-name" placeholder="Jan" required />
+            </div>
+            <div class="form-group">
+              <label>Achternaam</label>
+              <input type="text" id="p-achternaam" autocomplete="family-name" placeholder="de Vries" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Telefoonnummer</label>
+            <input type="tel" id="p-telefoon" autocomplete="tel" placeholder="+31 6 12345678" />
+          </div>
+
+          <hr style="border:none;border-top:1px solid #eee;margin:18px 0">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Straat</label>
+              <input type="text" id="p-adres" autocomplete="street-address" placeholder="Hoofdstraat" />
+            </div>
+            <div class="form-group">
+              <label>Huisnummer</label>
+              <input type="text" id="p-huisnummer" autocomplete="address-line2" placeholder="12a" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Postcode</label>
+              <input type="text" id="p-postcode" autocomplete="postal-code" placeholder="1234 AB" />
+            </div>
+            <div class="form-group">
+              <label>Woonplaats</label>
+              <input type="text" id="p-woonplaats" autocomplete="address-level2" placeholder="Amsterdam" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="gegevens-btn">Gegevens opslaan</button>
+          <div class="melding" id="gegevens-mel"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Wachtwoord kaart -->
+    <div class="kaart">
+      <div class="kaart-header">
+        <h2>&#128274; Wachtwoord wijzigen</h2>
+      </div>
+      <div class="kaart-body">
+        <form id="ww-form">
+          <div class="form-group">
+            <label>Huidig wachtwoord</label>
+            <input type="password" id="ww-huidig" autocomplete="current-password" placeholder="••••••••" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nieuw wachtwoord <span style="font-weight:400;color:#aaa">(min. 8 tekens)</span></label>
+              <input type="password" id="ww-nieuw" autocomplete="new-password" placeholder="••••••••" required minlength="8" />
+            </div>
+            <div class="form-group">
+              <label>Herhaal nieuw wachtwoord</label>
+              <input type="password" id="ww-herhaal" autocomplete="new-password" placeholder="••••••••" required minlength="8" />
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="ww-btn">Wachtwoord wijzigen</button>
+          <div class="melding" id="ww-mel"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="info-rij">
+      <span>&#128197; Account aangemaakt op: <strong id="aangemaakt-op">—</strong></span>
+    </div>
+  </main>
+
+  <script>
+    async function laadProfiel() {
+      const res = await fetch('/api/profiel');
+      if (res.status === 401) { window.location.href = '/login.html'; return; }
+      const p = await res.json();
+
+      document.getElementById('welkom-naam').textContent = 'Hallo, ' + p.voornaam + '!';
+      document.getElementById('welkom-sub').textContent = 'Beheer je gegevens bij Houthandel Veenstra';
+      document.getElementById('avatar-letter').textContent = p.voornaam.charAt(0).toUpperCase();
+
+      document.getElementById('p-email').value     = p.email || '';
+      document.getElementById('p-voornaam').value  = p.voornaam || '';
+      document.getElementById('p-achternaam').value = p.achternaam || '';
+      document.getElementById('p-telefoon').value  = p.telefoon || '';
+      document.getElementById('p-adres').value     = p.adres || '';
+      document.getElementById('p-huisnummer').value = p.huisnummer || '';
+      document.getElementById('p-postcode').value  = p.postcode || '';
+      document.getElementById('p-woonplaats').value = p.woonplaats || '';
+
+      if (p.aangemaakt_op) {
+        const d = new Date(p.aangemaakt_op);
+        document.getElementById('aangemaakt-op').textContent = d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+      }
+    }
+
+    document.getElementById('profiel-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mel = document.getElementById('gegevens-mel');
+      const btn = document.getElementById('gegevens-btn');
+      mel.style.display = 'none';
+      btn.disabled = true; btn.textContent = 'Opslaan…';
+
+      const res = await fetch('/api/profiel', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          voornaam:   document.getElementById('p-voornaam').value.trim(),
+          achternaam: document.getElementById('p-achternaam').value.trim(),
+          telefoon:   document.getElementById('p-telefoon').value.trim() || null,
+          adres:      document.getElementById('p-adres').value.trim() || null,
+          huisnummer: document.getElementById('p-huisnummer').value.trim() || null,
+          postcode:   document.getElementById('p-postcode').value.trim() || null,
+          woonplaats: document.getElementById('p-woonplaats').value.trim() || null,
+        })
+      });
+      const data = await res.json();
+      mel.className = 'melding ' + (res.ok ? 'ok' : 'fout');
+      mel.textContent = res.ok ? '✓ Gegevens opgeslagen.' : (data.error || 'Er is iets misgegaan.');
+      mel.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Gegevens opslaan';
+      if (res.ok) laadProfiel();
+    });
+
+    document.getElementById('ww-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const mel = document.getElementById('ww-mel');
+      const btn = document.getElementById('ww-btn');
+      mel.style.display = 'none';
+
+      const nieuw   = document.getElementById('ww-nieuw').value;
+      const herhaal = document.getElementById('ww-herhaal').value;
+      if (nieuw !== herhaal) {
+        mel.className = 'melding fout';
+        mel.textContent = 'Wachtwoorden komen niet overeen.';
+        mel.style.display = 'block';
+        return;
+      }
+
+      btn.disabled = true; btn.textContent = 'Wijzigen…';
+
+      const res = await fetch('/api/profiel/wachtwoord', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          huidig: document.getElementById('ww-huidig').value,
+          nieuw
+        })
+      });
+      const data = await res.json();
+      mel.className = 'melding ' + (res.ok ? 'ok' : 'fout');
+      mel.textContent = res.ok ? '✓ Wachtwoord gewijzigd.' : (data.error || 'Er is iets misgegaan.');
+      mel.style.display = 'block';
+      btn.disabled = false; btn.textContent = 'Wachtwoord wijzigen';
+      if (res.ok) document.getElementById('ww-form').reset();
+    });
+
+    async function uitloggen() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+
+    laadProfiel();
+  </script>
+</body>
+</html>

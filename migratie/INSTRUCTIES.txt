@@ -1,0 +1,71 @@
+============================================================
+  DATABASE MIGRATIE — NAS → DigitalOcean server
+============================================================
+
+Er zijn 3 scenario's. Kies het scenario dat van toepassing is.
+
+------------------------------------------------------------
+SCENARIO A — NAS is bereikbaar via IP (aanbevolen)
+  De server haalt de data direct van de NAS op.
+------------------------------------------------------------
+
+Vervang <NAS_IP> en <NAS_DB_USER> met jouw gegevens, en voer
+dit uit op de DigitalOcean server:
+
+  mysqldump -h <NAS_IP> -u <NAS_DB_USER> -p \
+    --no-create-info \
+    --complete-insert \
+    <NAS_DB_NAAM> producten productgroepen gebruikers \
+    > /root/webshop/migratie/export_nas.sql
+
+Ga dan direct naar stap: "IMPORTEREN OP DE SERVER"
+
+
+------------------------------------------------------------
+SCENARIO B — NAS niet bereikbaar, export op eigen PC/Mac
+  Exporteer op je eigen computer en upload naar server.
+------------------------------------------------------------
+
+STAP 1 — Exporteer op je eigen computer:
+  Windows (via CMD):
+    "C:\Program Files\MariaDB\bin\mysqldump.exe" -h <NAS_IP> -u <USER> -p ^
+      --no-create-info --complete-insert ^
+      <NAS_DB_NAAM> producten productgroepen gebruikers ^
+      > export_nas.sql
+
+  Mac/Linux terminal:
+    mysqldump -h <NAS_IP> -u <USER> -p \
+      --no-create-info --complete-insert \
+      <NAS_DB_NAAM> producten productgroepen gebruikers \
+      > export_nas.sql
+
+STAP 2 — Upload het bestand naar de server:
+  scp export_nas.sql root@64.225.75.120:/root/webshop/migratie/export_nas.sql
+
+
+------------------------------------------------------------
+SCENARIO C — Andere tabelstructuur (ander systeem)
+  Gebruik het meegeleverde mapping-script: import_mapping.sql
+------------------------------------------------------------
+
+Pas /root/webshop/migratie/import_mapping.sql aan voor
+jouw kolomnamen en voer het dan uit.
+
+
+------------------------------------------------------------
+IMPORTEREN OP DE SERVER (na A of B)
+------------------------------------------------------------
+
+1. Controleer het exportbestand eerst:
+   head -50 /root/webshop/migratie/export_nas.sql
+
+2. Droog-import (test zonder daadwerkelijk te importeren):
+   mysql -u root webshop < /root/webshop/migratie/export_nas.sql --dry-run 2>&1 | head -20
+
+3. Echte import:
+   mysql -u root webshop < /root/webshop/migratie/export_nas.sql
+
+4. Controleer het resultaat:
+   mysql -u root webshop -e "SELECT COUNT(*) AS producten FROM producten; SELECT COUNT(*) AS groepen FROM productgroepen; SELECT COUNT(*) AS gebruikers FROM gebruikers;"
+
+============================================================
